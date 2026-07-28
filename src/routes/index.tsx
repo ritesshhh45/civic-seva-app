@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Sanjay Chaudhary — Ward Seva App" },
       {
         property: "og:description",
-        content: "Your ward complaints, one tap away from your representative.",
+        content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
     ],
   }),
