@@ -1,17 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Bell } from "lucide-react";
+import { Pin, TriangleAlert } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
-import { notificationsQuery } from "@/lib/queries";
+import { updatesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/updates")({
   head: () => ({
     meta: [
-      { title: "Updates — Sanjay Chaudhary Seva App" },
-      { name: "description", content: "Ward announcements and notices from your representative." },
-      { property: "og:title", content: "Updates — Sanjay Chaudhary Seva App" },
-      { property: "og:description", content: "Latest ward announcements and notices." },
+      { title: "Updates — Sanjay Chaudhary Ward Seva App" },
+      { name: "description", content: "Ward announcements, alerts and notices from your representative." },
+      { property: "og:title", content: "Updates — Sanjay Chaudhary Ward Seva App" },
+      { property: "og:description", content: "Latest ward announcements and alerts." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: UpdatesPage,
@@ -19,36 +21,50 @@ export const Route = createFileRoute("/updates")({
 
 function UpdatesPage() {
   const { lang, t } = useLang();
-  const { data } = useQuery(notificationsQuery);
+  const { data } = useQuery(updatesQuery);
+  const rows = data ?? [];
 
   return (
-    <AppLayout>
+    <AppLayout title={t("updates")}>
       {() => (
-        <div>
-          <h1 className="mb-4 text-xl font-extrabold">{t("updates")}</h1>
-          {!data || data.length === 0 ? (
-            <p className="card-soft p-6 text-center text-sm text-muted-foreground">
+        <div className="space-y-4">
+          {rows.length === 0 ? (
+            <p className="card-premium p-6 text-center text-sm text-muted-foreground">
               {t("noUpdates")}
             </p>
           ) : (
-            <ul className="space-y-3">
-              {data.map((n) => (
-                <li key={n.id} className="card-soft flex gap-3 p-4">
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary">
-                    <Bell className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <p className="font-bold leading-tight">{pick(lang, n.title_mr, n.title_en)}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {pick(lang, n.body_mr, n.body_en)}
-                    </p>
-                    <p className="mt-2 text-[11px] text-muted-foreground">
-                      {new Date(n.created_at).toLocaleString(lang === "mr" ? "mr-IN" : "en-IN")}
-                    </p>
+            rows.map((u) => (
+              <Link
+                key={u.id}
+                to="/updates/$updateId"
+                params={{ updateId: u.id }}
+                className="press card-premium animate-rise block overflow-hidden"
+              >
+                {u.image_url ? <img src={u.image_url} alt="" className="h-36 w-full object-cover" /> : null}
+                <div className="space-y-1.5 p-4">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {u.is_important ? (
+                      <span className="flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold text-primary-foreground">
+                        <TriangleAlert className="h-3 w-3" /> {t("important")}
+                      </span>
+                    ) : null}
+                    {u.is_pinned ? <Pin className="h-3.5 w-3.5 text-primary" /> : null}
+                    <span className="rounded-full bg-primary/12 px-2.5 py-0.5 text-[10px] font-bold text-primary">
+                      {pick(lang, u.category_mr, u.category_en) || t("updates")}
+                    </span>
                   </div>
-                </li>
-              ))}
-            </ul>
+                  <p className="text-base font-extrabold leading-snug">
+                    {pick(lang, u.title_mr, u.title_en)}
+                  </p>
+                  <p className="line-clamp-2 text-sm text-muted-foreground">
+                    {pick(lang, u.body_mr, u.body_en)}
+                  </p>
+                  <p className="pt-1 text-[11px] text-muted-foreground">
+                    {new Date(u.publish_at).toLocaleString(lang === "mr" ? "mr-IN" : "en-IN")}
+                  </p>
+                </div>
+              </Link>
+            ))
           )}
         </div>
       )}

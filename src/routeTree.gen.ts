@@ -18,6 +18,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
 
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
@@ -64,28 +65,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
+  id: '/$schemeId',
+  path: '/$schemeId',
+  getParentRoute: () => SchemesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
-  '/schemes': typeof SchemesRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
+  '/schemes/$schemeId': typeof SchemesSchemeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
-  '/schemes': typeof SchemesRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
+  '/schemes/$schemeId': typeof SchemesSchemeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +101,12 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
-  '/schemes': typeof SchemesRoute
+  '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
+  '/schemes/$schemeId': typeof SchemesSchemeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
+    | '/schemes/$schemeId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
+    | '/schemes/$schemeId'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
+    | '/schemes/$schemeId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,7 +152,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
-  SchemesRoute: typeof SchemesRoute
+  SchemesRoute: typeof SchemesRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
@@ -212,15 +224,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schemes/$schemeId': {
+      id: '/schemes/$schemeId'
+      path: '/$schemeId'
+      fullPath: '/schemes/$schemeId'
+      preLoaderRoute: typeof SchemesSchemeIdRouteImport
+      parentRoute: typeof SchemesRoute
+    }
   }
 }
+
+interface SchemesRouteChildren {
+  SchemesSchemeIdRoute: typeof SchemesSchemeIdRoute
+}
+
+const SchemesRouteChildren: SchemesRouteChildren = {
+  SchemesSchemeIdRoute: SchemesSchemeIdRoute,
+}
+
+const SchemesRouteWithChildren =
+  SchemesRoute._addFileChildren(SchemesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
-  SchemesRoute: SchemesRoute,
+  SchemesRoute: SchemesRouteWithChildren,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
