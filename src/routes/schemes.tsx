@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { schemesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
-export const Route = createFileRoute("/schemes")({
+export const Route = createFileRoute("/schemes/")({
   head: () => ({
     meta: [
       { title: "Government Schemes — Ward Seva App" },
