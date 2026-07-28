@@ -18,6 +18,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UpdatesUpdateIdRouteImport } from './routes/updates.$updateId'
 import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
 
 const UpdatesRoute = UpdatesRouteImport.update({
@@ -65,6 +66,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpdatesUpdateIdRoute = UpdatesUpdateIdRouteImport.update({
+  id: '/$updateId',
+  path: '/$updateId',
+  getParentRoute: () => UpdatesRoute,
+} as any)
 const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
   id: '/$schemeId',
   path: '/$schemeId',
@@ -80,8 +86,9 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
-  '/updates': typeof UpdatesRoute
+  '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
+  '/updates/$updateId': typeof UpdatesUpdateIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,8 +99,9 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
-  '/updates': typeof UpdatesRoute
+  '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
+  '/updates/$updateId': typeof UpdatesUpdateIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,8 +113,9 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
-  '/updates': typeof UpdatesRoute
+  '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
+  '/updates/$updateId': typeof UpdatesUpdateIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
+    | '/updates/$updateId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
+    | '/updates/$updateId'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
+    | '/updates/$updateId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -156,7 +168,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
-  UpdatesRoute: typeof UpdatesRoute
+  UpdatesRoute: typeof UpdatesRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -224,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/updates/$updateId': {
+      id: '/updates/$updateId'
+      path: '/$updateId'
+      fullPath: '/updates/$updateId'
+      preLoaderRoute: typeof UpdatesUpdateIdRouteImport
+      parentRoute: typeof UpdatesRoute
+    }
     '/schemes/$schemeId': {
       id: '/schemes/$schemeId'
       path: '/$schemeId'
@@ -245,6 +264,17 @@ const SchemesRouteChildren: SchemesRouteChildren = {
 const SchemesRouteWithChildren =
   SchemesRoute._addFileChildren(SchemesRouteChildren)
 
+interface UpdatesRouteChildren {
+  UpdatesUpdateIdRoute: typeof UpdatesUpdateIdRoute
+}
+
+const UpdatesRouteChildren: UpdatesRouteChildren = {
+  UpdatesUpdateIdRoute: UpdatesUpdateIdRoute,
+}
+
+const UpdatesRouteWithChildren =
+  UpdatesRoute._addFileChildren(UpdatesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -254,7 +284,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
-  UpdatesRoute: UpdatesRoute,
+  UpdatesRoute: UpdatesRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
