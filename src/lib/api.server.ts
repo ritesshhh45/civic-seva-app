@@ -76,9 +76,13 @@ export async function saveRowImpl(
   table: "categories" | "notifications" | "gallery",
   row: Record<string, unknown>,
 ) {
+  const client = supabaseAdmin.from(table) as unknown as {
+    update: (r: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> };
+    insert: (r: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+  };
   const { error } = row.id
-    ? await supabaseAdmin.from(table).update(row).eq("id", row.id as string)
-    : await supabaseAdmin.from(table).insert(row);
+    ? await client.update(row).eq("id", row.id as string)
+    : await client.insert(row);
   if (error) throw new Error(error.message);
   return { ok: true };
 }
