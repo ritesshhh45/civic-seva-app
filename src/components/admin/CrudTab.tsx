@@ -33,7 +33,7 @@ export function CrudTab<T extends Row>({
   titleOf: (row: T) => string;
 }) {
   const qc = useQueryClient();
-  const { data } = useQuery(options);
+  const { data } = useQuery(options) as { data: T[] | undefined };
   const save = useServerFn(adminSaveRow);
   const remove = useServerFn(adminDeleteRow);
   const [rows, setRows] = useState<T[]>([]);
