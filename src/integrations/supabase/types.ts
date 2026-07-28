@@ -14,7 +14,230 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      app_config: {
+        Row: {
+          accent_color: string
+          admin_phone: string
+          app_icon_url: string
+          app_name: string
+          id: string
+          party_logo_url: string
+          party_name_en: string
+          party_name_mr: string
+          phone: string
+          photo_url: string
+          rep_name_en: string
+          rep_name_mr: string
+          slogan_en: string
+          slogan_mr: string
+          tagline_en: string
+          tagline_mr: string
+          updated_at: string
+          ward_en: string
+          ward_mr: string
+          whatsapp: string
+        }
+        Insert: {
+          accent_color?: string
+          admin_phone?: string
+          app_icon_url?: string
+          app_name?: string
+          id?: string
+          party_logo_url?: string
+          party_name_en?: string
+          party_name_mr?: string
+          phone?: string
+          photo_url?: string
+          rep_name_en?: string
+          rep_name_mr?: string
+          slogan_en?: string
+          slogan_mr?: string
+          tagline_en?: string
+          tagline_mr?: string
+          updated_at?: string
+          ward_en?: string
+          ward_mr?: string
+          whatsapp?: string
+        }
+        Update: {
+          accent_color?: string
+          admin_phone?: string
+          app_icon_url?: string
+          app_name?: string
+          id?: string
+          party_logo_url?: string
+          party_name_en?: string
+          party_name_mr?: string
+          phone?: string
+          photo_url?: string
+          rep_name_en?: string
+          rep_name_mr?: string
+          slogan_en?: string
+          slogan_mr?: string
+          tagline_en?: string
+          tagline_mr?: string
+          updated_at?: string
+          ward_en?: string
+          ward_mr?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
+      app_users: {
+        Row: {
+          created_at: string
+          device_id: string
+          id: string
+          mobile: string
+          name: string
+          push_token: string | null
+        }
+        Insert: {
+          created_at?: string
+          device_id: string
+          id?: string
+          mobile: string
+          name: string
+          push_token?: string | null
+        }
+        Update: {
+          created_at?: string
+          device_id?: string
+          id?: string
+          mobile?: string
+          name?: string
+          push_token?: string | null
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          message_en: string
+          message_mr: string
+          name_en: string
+          name_mr: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          message_en: string
+          message_mr: string
+          name_en: string
+          name_mr: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          message_en?: string
+          message_mr?: string
+          name_en?: string
+          name_mr?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      complaint_taps: {
+        Row: {
+          category_id: string | null
+          category_name: string
+          created_at: string
+          device_id: string
+          id: string
+          mobile: string
+          user_name: string
+        }
+        Insert: {
+          category_id?: string | null
+          category_name: string
+          created_at?: string
+          device_id: string
+          id?: string
+          mobile: string
+          user_name: string
+        }
+        Update: {
+          category_id?: string | null
+          category_name?: string
+          created_at?: string
+          device_id?: string
+          id?: string
+          mobile?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaint_taps_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          title_en: string
+          title_mr: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          title_en?: string
+          title_mr?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          title_en?: string
+          title_mr?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body_en: string
+          body_mr: string
+          created_at: string
+          id: string
+          title_en: string
+          title_mr: string
+        }
+        Insert: {
+          body_en?: string
+          body_mr: string
+          created_at?: string
+          id?: string
+          title_en?: string
+          title_mr: string
+        }
+        Update: {
+          body_en?: string
+          body_mr?: string
+          created_at?: string
+          id?: string
+          title_en?: string
+          title_mr?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
