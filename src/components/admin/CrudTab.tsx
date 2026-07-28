@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Save, Trash2 } from "lucide-react";
 import { adminDeleteRow, adminSaveRow, type AdminTableName } from "@/lib/api.functions";
@@ -25,7 +25,8 @@ export function CrudTab<T extends Row>({
   auth: { phone: string; pin: string };
   table: AdminTableName;
   queryKey: string;
-  options: UseQueryOptions<T[], Error, T[], readonly unknown[]>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  options: any;
   fields: FieldSpec<T>[];
   blank: (count: number) => Omit<T, "id">;
   addLabel: string;
