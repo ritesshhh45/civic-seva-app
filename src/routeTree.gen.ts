@@ -18,6 +18,8 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UpdatesIndexRouteImport } from './routes/updates.index'
+import { Route as SchemesIndexRouteImport } from './routes/schemes.index'
 import { Route as UpdatesUpdateIdRouteImport } from './routes/updates.$updateId'
 import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
 
@@ -66,6 +68,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpdatesIndexRoute = UpdatesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UpdatesRoute,
+} as any)
+const SchemesIndexRoute = SchemesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SchemesRoute,
+} as any)
 const UpdatesUpdateIdRoute = UpdatesUpdateIdRouteImport.update({
   id: '/$updateId',
   path: '/$updateId',
@@ -89,19 +101,21 @@ export interface FileRoutesByFullPath {
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
+  '/schemes/': typeof SchemesIndexRoute
+  '/updates/': typeof UpdatesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
-  '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
-  '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
+  '/schemes': typeof SchemesIndexRoute
+  '/updates': typeof UpdatesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +130,8 @@ export interface FileRoutesById {
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
+  '/schemes/': typeof SchemesIndexRoute
+  '/updates/': typeof UpdatesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,19 +147,21 @@ export interface FileRouteTypes {
     | '/updates'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
+    | '/schemes/'
+    | '/updates/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/home'
     | '/profile'
-    | '/schemes'
     | '/services'
     | '/sitemap.xml'
     | '/takrari'
-    | '/updates'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
+    | '/schemes'
+    | '/updates'
   id:
     | '__root__'
     | '/'
@@ -157,6 +175,8 @@ export interface FileRouteTypes {
     | '/updates'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
+    | '/schemes/'
+    | '/updates/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,6 +256,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/updates/': {
+      id: '/updates/'
+      path: '/'
+      fullPath: '/updates/'
+      preLoaderRoute: typeof UpdatesIndexRouteImport
+      parentRoute: typeof UpdatesRoute
+    }
+    '/schemes/': {
+      id: '/schemes/'
+      path: '/'
+      fullPath: '/schemes/'
+      preLoaderRoute: typeof SchemesIndexRouteImport
+      parentRoute: typeof SchemesRoute
+    }
     '/updates/$updateId': {
       id: '/updates/$updateId'
       path: '/$updateId'
@@ -255,10 +289,12 @@ declare module '@tanstack/react-router' {
 
 interface SchemesRouteChildren {
   SchemesSchemeIdRoute: typeof SchemesSchemeIdRoute
+  SchemesIndexRoute: typeof SchemesIndexRoute
 }
 
 const SchemesRouteChildren: SchemesRouteChildren = {
   SchemesSchemeIdRoute: SchemesSchemeIdRoute,
+  SchemesIndexRoute: SchemesIndexRoute,
 }
 
 const SchemesRouteWithChildren =
@@ -266,10 +302,12 @@ const SchemesRouteWithChildren =
 
 interface UpdatesRouteChildren {
   UpdatesUpdateIdRoute: typeof UpdatesUpdateIdRoute
+  UpdatesIndexRoute: typeof UpdatesIndexRoute
 }
 
 const UpdatesRouteChildren: UpdatesRouteChildren = {
   UpdatesUpdateIdRoute: UpdatesUpdateIdRoute,
+  UpdatesIndexRoute: UpdatesIndexRoute,
 }
 
 const UpdatesRouteWithChildren =
