@@ -2,14 +2,39 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export type AdminAuth = { phone: string; pin: string };
 
+export type AdminTable =
+  | "categories"
+  | "notifications"
+  | "gallery"
+  | "updates"
+  | "works"
+  | "schemes"
+  | "admin_users";
+
+function normaliseMobile(v: string) {
+  return (v ?? "").replace(/\D/g, "").slice(-10);
+}
+
+export async function lookupRoleImpl(mobile: string) {
+  const m = normaliseMobile(mobile);
+  if (!m) return { role: null as string | null };
+  const { data } = await supabaseAdmin
+    .from("admin_users")
+    .select("role")
+    .eq("mobile", m)
+    .maybeSingle();
+  return { role: (data as { role?: string } | null)?.role ?? null };
+}
+
 export async function assertAdmin(auth: AdminAuth) {
   const pin = process.env.ADMIN_PIN;
   if (!pin) throw new Error("Admin PIN is not configured");
-  const { data } = await supabaseAdmin.from("app_config").select("admin_phone").limit(1).single();
-  const allowed = (data as { admin_phone?: string } | null)?.admin_phone ?? "9422115394";
-  if (!auth || auth.phone?.trim() !== allowed || auth.pin !== pin) {
+  if (!auth || auth.pin !== pin) throw new Error("Invalid admin phone number or PIN");
+  const { role } = await lookupRoleImpl(auth.phone ?? "");
+  if (role !== "admin" && role !== "super_admin") {
     throw new Error("Invalid admin phone number or PIN");
   }
+  return role;
 }
 
 export async function registerUserImpl(input: {
@@ -72,25 +97,31 @@ export async function adminListTapsImpl() {
   }[];
 }
 
-export async function saveRowImpl(
-  table: "categories" | "notifications" | "gallery",
-  row: Record<string, unknown>,
-) {
+export async function adminListRowsImpl(table: AdminTable) {
+  const { data, error } = await supabaseAdmin.from(table).select("*");
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Record<string, unknown>[];
+}
+
+export async function saveRowImpl(table: AdminTable, row: Record<string, unknown>) {
+  const payload = { ...row };
+  if (table === "admin_users" && typeof payload.mobile === "string") {
+    payload.mobile = normaliseMobile(payload.mobile);
+  }
   const client = supabaseAdmin.from(table) as unknown as {
-    update: (r: Record<string, unknown>) => { eq: (c: string, v: string) => Promise<{ error: { message: string } | null }> };
+    update: (r: Record<string, unknown>) => {
+      eq: (c: string, v: string) => Promise<{ error: { message: string } | null }>;
+    };
     insert: (r: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
   };
-  const { error } = row.id
-    ? await client.update(row).eq("id", row.id as string)
-    : await client.insert(row);
+  const id = payload.id as string | undefined;
+  delete payload.id;
+  const { error } = id ? await client.update(payload).eq("id", id) : await client.insert(payload);
   if (error) throw new Error(error.message);
   return { ok: true };
 }
 
-export async function deleteRowImpl(
-  table: "categories" | "notifications" | "gallery",
-  id: string,
-) {
+export async function deleteRowImpl(table: AdminTable, id: string) {
   const { error } = await supabaseAdmin.from(table).delete().eq("id", id);
   if (error) throw new Error(error.message);
   return { ok: true };
