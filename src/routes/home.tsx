@@ -1,9 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Phone, MessageCircle, MapPin, TriangleAlert, ArrowRight, ChevronRight } from "lucide-react";
+import { Phone, MessageCircle, MapPin, TriangleAlert, ArrowRight, ChevronRight, Landmark } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { CategoryIcon } from "@/components/CategoryIcon";
-import { configQuery, updatesQuery, waLink, worksQuery } from "@/lib/queries";
+import {
+  configQuery,
+  galleryQuery,
+  schemesQuery,
+  updatesQuery,
+  waLink,
+  worksQuery,
+} from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/home")({
@@ -29,11 +36,15 @@ function HomePage() {
   const { data: config } = useQuery(configQuery);
   const { data: updates } = useQuery(updatesQuery);
   const { data: works } = useQuery(worksQuery);
+  const { data: schemes } = useQuery(schemesQuery);
+  const { data: gallery } = useQuery(galleryQuery);
 
   const list = updates ?? [];
   const alert = list.find((u) => u.is_important);
   const cards = list.slice(0, 8);
   const activeWorks = (works ?? []).filter((w) => w.is_active);
+  const activeSchemes = (schemes ?? []).filter((s) => s.is_active);
+  const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
 
   return (
     <AppLayout>
