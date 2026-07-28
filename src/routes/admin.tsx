@@ -15,11 +15,18 @@ import {
   configQuery,
   galleryQuery,
   notificationsQuery,
+  updatesQuery,
+  worksQuery,
+  schemesQuery,
   waLink,
   type Category,
   type GalleryRow,
   type NotificationRow,
+  type UpdateRow,
+  type WorkRow,
+  type SchemeRow,
 } from "@/lib/queries";
+import { CrudTab } from "@/components/admin/CrudTab";
 import { ICON_NAMES, CategoryIcon } from "@/components/CategoryIcon";
 
 export const Route = createFileRoute("/admin")({
@@ -130,7 +137,16 @@ function AdminLogin({ onSuccess }: { onSuccess: (a: Auth) => void }) {
   );
 }
 
-const TABS = ["Settings", "Categories", "Citizens", "Notices", "Gallery"] as const;
+const TABS = [
+  "Settings",
+  "Updates",
+  "Works",
+  "Schemes",
+  "Categories",
+  "Citizens",
+  "Notices",
+  "Gallery",
+] as const;
 
 function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
@@ -163,10 +179,136 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
         {tab === "Citizens" ? <CitizensTab auth={auth} /> : null}
         {tab === "Notices" ? <NoticesTab auth={auth} /> : null}
         {tab === "Gallery" ? <GalleryTab auth={auth} /> : null}
+        {tab === "Updates" ? (
+          <CrudTab<UpdateRow>
+            auth={auth}
+            table="updates"
+            queryKey="updates"
+            options={updatesQuery}
+            addLabel="New update"
+            titleOf={(r) => r.title_mr || r.title_en}
+            blank={() => ({
+              title_mr: "",
+              title_en: "",
+              body_mr: "",
+              body_en: "",
+              image_url: "",
+              category_mr: "",
+              category_en: "",
+              is_pinned: false,
+              is_important: false,
+              is_archived: false,
+              publish_at: new Date().toISOString(),
+              created_at: new Date().toISOString(),
+            })}
+            fields={[
+              { key: "title_mr", label: "Title (Marathi)" },
+              { key: "title_en", label: "Title (English)" },
+              { key: "body_mr", label: "Body (Marathi)", type: "textarea" },
+              { key: "body_en", label: "Body (English)", type: "textarea" },
+              { key: "category_mr", label: "Category (Marathi)" },
+              { key: "category_en", label: "Category (English)" },
+              { key: "image_url", label: "Image URL" },
+              { key: "publish_at", label: "Publish at (ISO)" },
+              { key: "is_pinned", label: "Pinned", type: "bool" },
+              { key: "is_important", label: "Breaking / important", type: "bool" },
+              { key: "is_archived", label: "Archived", type: "bool" },
+            ]}
+          />
+        ) : null}
+        {tab === "Works" ? (
+          <CrudTab<WorkRow>
+            auth={auth}
+            table="works"
+            queryKey="works"
+            options={worksQuery}
+            addLabel="New development work"
+            titleOf={(r) => r.title_mr || r.title_en}
+            blank={(n) => ({
+              title_mr: "",
+              title_en: "",
+              desc_mr: "",
+              desc_en: "",
+              image_url: "",
+              icon: "Construction",
+              status_mr: "",
+              status_en: "",
+              sort_order: n + 1,
+              is_active: true,
+            })}
+            fields={[
+              { key: "title_mr", label: "Title (Marathi)" },
+              { key: "title_en", label: "Title (English)" },
+              { key: "desc_mr", label: "Description (Marathi)", type: "textarea" },
+              { key: "desc_en", label: "Description (English)", type: "textarea" },
+              { key: "status_mr", label: "Status (Marathi)" },
+              { key: "status_en", label: "Status (English)" },
+              { key: "image_url", label: "Image URL" },
+              { key: "icon", label: "Icon name" },
+              { key: "sort_order", label: "Order", type: "number" },
+              { key: "is_active", label: "Active", type: "bool" },
+            ]}
+          />
+        ) : null}
+        {tab === "Schemes" ? (
+          <CrudTab<SchemeRow>
+            auth={auth}
+            table="schemes"
+            queryKey="schemes"
+            options={schemesQuery}
+            addLabel="New scheme"
+            titleOf={(r) => r.name_mr || r.name_en}
+            blank={(n) => ({
+              name_mr: "",
+              name_en: "",
+              category_mr: "",
+              category_en: "",
+              logo_url: "",
+              banner_url: "",
+              desc_mr: "",
+              desc_en: "",
+              eligibility_mr: "",
+              eligibility_en: "",
+              documents_mr: "",
+              documents_en: "",
+              benefits_mr: "",
+              benefits_en: "",
+              last_date: "",
+              website_url: "",
+              is_new: true,
+              is_featured: false,
+              is_active: true,
+              sort_order: n + 1,
+            })}
+            fields={[
+              { key: "name_mr", label: "Name (Marathi)" },
+              { key: "name_en", label: "Name (English)" },
+              { key: "category_mr", label: "Category (Marathi)" },
+              { key: "category_en", label: "Category (English)" },
+              { key: "logo_url", label: "Logo URL" },
+              { key: "banner_url", label: "Banner URL" },
+              { key: "desc_mr", label: "Description (Marathi)", type: "textarea" },
+              { key: "desc_en", label: "Description (English)", type: "textarea" },
+              { key: "eligibility_mr", label: "Eligibility (Marathi)", type: "textarea" },
+              { key: "eligibility_en", label: "Eligibility (English)", type: "textarea" },
+              { key: "documents_mr", label: "Documents (Marathi)", type: "textarea" },
+              { key: "documents_en", label: "Documents (English)", type: "textarea" },
+              { key: "benefits_mr", label: "Benefits (Marathi)", type: "textarea" },
+              { key: "benefits_en", label: "Benefits (English)", type: "textarea" },
+              { key: "last_date", label: "Last date" },
+              { key: "website_url", label: "Official website URL" },
+              { key: "is_new", label: "New", type: "bool" },
+              { key: "is_featured", label: "Featured", type: "bool" },
+              { key: "is_active", label: "Active", type: "bool" },
+              { key: "sort_order", label: "Order", type: "number" },
+            ]}
+          />
+        ) : null}
       </main>
     </div>
   );
 }
+
 
 function SettingsTab({ auth }: { auth: Auth }) {
   const qc = useQueryClient();
@@ -515,6 +657,8 @@ function GalleryTab({ auth }: { auth: Auth }) {
               title_en: "",
               image_url: "",
               sort_order: r.length + 1,
+              video_url: "",
+              media_type: "photo",
             },
           ])
         }

@@ -1,5 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 
+export type AdminTableName =
+  | "categories"
+  | "notifications"
+  | "gallery"
+  | "updates"
+  | "works"
+  | "schemes"
+  | "admin_users";
+
 export const registerUser = createServerFn({ method: "POST" })
   .inputValidator((d: { deviceId: string; name: string; mobile: string }) => d)
   .handler(async ({ data }) => {
@@ -29,12 +38,19 @@ export const myHistory = createServerFn({ method: "POST" })
     return myHistoryImpl(data.deviceId);
   });
 
+export const lookupRole = createServerFn({ method: "POST" })
+  .inputValidator((d: { mobile: string }) => d)
+  .handler(async ({ data }) => {
+    const { lookupRoleImpl } = await import("./api.server");
+    return lookupRoleImpl(data.mobile);
+  });
+
 export const adminLogin = createServerFn({ method: "POST" })
   .inputValidator((d: { phone: string; pin: string }) => d)
   .handler(async ({ data }) => {
     const { assertAdmin } = await import("./api.server");
-    await assertAdmin(data);
-    return { ok: true };
+    const role = await assertAdmin(data);
+    return { ok: true, role };
   });
 
 export const adminListTaps = createServerFn({ method: "POST" })
@@ -43,6 +59,14 @@ export const adminListTaps = createServerFn({ method: "POST" })
     const { assertAdmin, adminListTapsImpl } = await import("./api.server");
     await assertAdmin(data);
     return adminListTapsImpl();
+  });
+
+export const adminListAdmins = createServerFn({ method: "POST" })
+  .inputValidator((d: { phone: string; pin: string }) => d)
+  .handler(async ({ data }) => {
+    const { assertAdmin, adminListAdminsImpl } = await import("./api.server");
+    await assertAdmin(data);
+    return adminListAdminsImpl();
   });
 
 export const adminUpdateConfig = createServerFn({ method: "POST" })
@@ -58,7 +82,7 @@ export const adminSaveRow = createServerFn({ method: "POST" })
     (d: {
       phone: string;
       pin: string;
-      table: "categories" | "notifications" | "gallery";
+      table: AdminTableName;
       row: Record<string, unknown>;
     }) => d,
   )
@@ -69,14 +93,7 @@ export const adminSaveRow = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteRow = createServerFn({ method: "POST" })
-  .inputValidator(
-    (d: {
-      phone: string;
-      pin: string;
-      table: "categories" | "notifications" | "gallery";
-      id: string;
-    }) => d,
-  )
+  .inputValidator((d: { phone: string; pin: string; table: AdminTableName; id: string }) => d)
   .handler(async ({ data }) => {
     const { assertAdmin, deleteRowImpl } = await import("./api.server");
     await assertAdmin(data);

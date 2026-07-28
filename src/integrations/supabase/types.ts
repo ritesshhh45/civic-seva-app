@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          id: string
+          mobile: string
+          name: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mobile: string
+          name?: string
+          role?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mobile?: string
+          name?: string
+          role?: string
+        }
+        Relationships: []
+      }
       app_config: {
         Row: {
           accent_color: string
@@ -21,6 +45,9 @@ export type Database = {
           app_icon_url: string
           app_name: string
           id: string
+          office_address_en: string
+          office_address_mr: string
+          office_map_url: string
           party_logo_url: string
           party_name_en: string
           party_name_mr: string
@@ -43,6 +70,9 @@ export type Database = {
           app_icon_url?: string
           app_name?: string
           id?: string
+          office_address_en?: string
+          office_address_mr?: string
+          office_map_url?: string
           party_logo_url?: string
           party_name_en?: string
           party_name_mr?: string
@@ -65,6 +95,9 @@ export type Database = {
           app_icon_url?: string
           app_name?: string
           id?: string
+          office_address_en?: string
+          office_address_mr?: string
+          office_map_url?: string
           party_logo_url?: string
           party_name_en?: string
           party_name_mr?: string
@@ -189,25 +222,31 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          media_type: string
           sort_order: number
           title_en: string
           title_mr: string
+          video_url: string
         }
         Insert: {
           created_at?: string
           id?: string
           image_url: string
+          media_type?: string
           sort_order?: number
           title_en?: string
           title_mr?: string
+          video_url?: string
         }
         Update: {
           created_at?: string
           id?: string
           image_url?: string
+          media_type?: string
           sort_order?: number
           title_en?: string
           title_mr?: string
+          video_url?: string
         }
         Relationships: []
       }
@@ -235,6 +274,183 @@ export type Database = {
           id?: string
           title_en?: string
           title_mr?: string
+        }
+        Relationships: []
+      }
+      schemes: {
+        Row: {
+          banner_url: string
+          benefits_en: string
+          benefits_mr: string
+          category_en: string
+          category_mr: string
+          created_at: string
+          desc_en: string
+          desc_mr: string
+          documents_en: string
+          documents_mr: string
+          eligibility_en: string
+          eligibility_mr: string
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          is_new: boolean
+          last_date: string
+          logo_url: string
+          name_en: string
+          name_mr: string
+          sort_order: number
+          updated_at: string
+          website_url: string
+        }
+        Insert: {
+          banner_url?: string
+          benefits_en?: string
+          benefits_mr?: string
+          category_en?: string
+          category_mr?: string
+          created_at?: string
+          desc_en?: string
+          desc_mr?: string
+          documents_en?: string
+          documents_mr?: string
+          eligibility_en?: string
+          eligibility_mr?: string
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          is_new?: boolean
+          last_date?: string
+          logo_url?: string
+          name_en?: string
+          name_mr?: string
+          sort_order?: number
+          updated_at?: string
+          website_url?: string
+        }
+        Update: {
+          banner_url?: string
+          benefits_en?: string
+          benefits_mr?: string
+          category_en?: string
+          category_mr?: string
+          created_at?: string
+          desc_en?: string
+          desc_mr?: string
+          documents_en?: string
+          documents_mr?: string
+          eligibility_en?: string
+          eligibility_mr?: string
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          is_new?: boolean
+          last_date?: string
+          logo_url?: string
+          name_en?: string
+          name_mr?: string
+          sort_order?: number
+          updated_at?: string
+          website_url?: string
+        }
+        Relationships: []
+      }
+      updates: {
+        Row: {
+          body_en: string
+          body_mr: string
+          category_en: string
+          category_mr: string
+          created_at: string
+          id: string
+          image_url: string
+          is_archived: boolean
+          is_important: boolean
+          is_pinned: boolean
+          publish_at: string
+          title_en: string
+          title_mr: string
+          updated_at: string
+        }
+        Insert: {
+          body_en?: string
+          body_mr?: string
+          category_en?: string
+          category_mr?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_archived?: boolean
+          is_important?: boolean
+          is_pinned?: boolean
+          publish_at?: string
+          title_en?: string
+          title_mr?: string
+          updated_at?: string
+        }
+        Update: {
+          body_en?: string
+          body_mr?: string
+          category_en?: string
+          category_mr?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_archived?: boolean
+          is_important?: boolean
+          is_pinned?: boolean
+          publish_at?: string
+          title_en?: string
+          title_mr?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      works: {
+        Row: {
+          created_at: string
+          desc_en: string
+          desc_mr: string
+          icon: string
+          id: string
+          image_url: string
+          is_active: boolean
+          sort_order: number
+          status_en: string
+          status_mr: string
+          title_en: string
+          title_mr: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desc_en?: string
+          desc_mr?: string
+          icon?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          sort_order?: number
+          status_en?: string
+          status_mr?: string
+          title_en?: string
+          title_mr?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desc_en?: string
+          desc_mr?: string
+          icon?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          sort_order?: number
+          status_en?: string
+          status_mr?: string
+          title_en?: string
+          title_mr?: string
+          updated_at?: string
         }
         Relationships: []
       }
