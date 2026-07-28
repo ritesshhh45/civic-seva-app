@@ -15,11 +15,18 @@ import {
   configQuery,
   galleryQuery,
   notificationsQuery,
+  updatesQuery,
+  worksQuery,
+  schemesQuery,
   waLink,
   type Category,
   type GalleryRow,
   type NotificationRow,
+  type UpdateRow,
+  type WorkRow,
+  type SchemeRow,
 } from "@/lib/queries";
+import { CrudTab } from "@/components/admin/CrudTab";
 import { ICON_NAMES, CategoryIcon } from "@/components/CategoryIcon";
 
 export const Route = createFileRoute("/admin")({
