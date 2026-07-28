@@ -13,11 +13,11 @@ import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as TakrariRouteImport } from './routes/takrari'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SchemesIndexRouteImport } from './routes/schemes.index'
 
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
@@ -37,6 +37,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -59,33 +64,28 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SchemesIndexRoute = SchemesIndexRouteImport.update({
-  id: '/schemes/',
-  path: '/schemes/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/schemes': typeof SchemesRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
-  '/schemes/': typeof SchemesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/schemes': typeof SchemesRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
-  '/schemes': typeof SchemesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,11 +93,11 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/schemes': typeof SchemesRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
-  '/schemes/': typeof SchemesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,33 +106,33 @@ export interface FileRouteTypes {
     | '/admin'
     | '/home'
     | '/profile'
+    | '/schemes'
     | '/services'
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
-    | '/schemes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/home'
     | '/profile'
+    | '/schemes'
     | '/services'
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
-    | '/schemes'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/home'
     | '/profile'
+    | '/schemes'
     | '/services'
     | '/sitemap.xml'
     | '/takrari'
     | '/updates'
-    | '/schemes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,11 +140,11 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
+  SchemesRoute: typeof SchemesRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
   UpdatesRoute: typeof UpdatesRoute
-  SchemesIndexRoute: typeof SchemesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -177,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -205,13 +212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/schemes/': {
-      id: '/schemes/'
-      path: '/schemes'
-      fullPath: '/schemes/'
-      preLoaderRoute: typeof SchemesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -220,11 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
+  SchemesRoute: SchemesRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
   UpdatesRoute: UpdatesRoute,
-  SchemesIndexRoute: SchemesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
