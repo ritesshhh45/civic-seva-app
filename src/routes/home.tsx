@@ -207,6 +207,63 @@ function HomePage() {
               {t("chooseIssue")} <ArrowRight className="h-4 w-4" />
             </span>
           </Link>
+
+          {/* Government schemes */}
+          {activeSchemes.length > 0 ? (
+            <section className="animate-rise">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-base font-extrabold">{t("schemes")}</h2>
+                <Link to="/schemes" className="flex items-center gap-1 text-xs font-bold text-primary">
+                  {t("viewAll")} <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
+                {activeSchemes.slice(0, 8).map((s) => (
+                  <Link
+                    key={s.id}
+                    to="/schemes/$schemeId"
+                    params={{ schemeId: s.id }}
+                    className="press card-premium w-44 shrink-0 p-4"
+                  >
+                    {s.logo_url ? (
+                      <img src={s.logo_url} alt="" className="h-10 w-10 rounded-xl object-cover" />
+                    ) : (
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/12 text-primary">
+                        <Landmark className="h-5 w-5" />
+                      </span>
+                    )}
+                    <p className="mt-2 text-sm font-bold leading-tight">
+                      {pick(lang, s.name_mr, s.name_en)}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">
+                      {pick(lang, s.desc_mr, s.desc_en)}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* Gallery */}
+          {photos.length > 0 ? (
+            <section className="animate-rise">
+              <h2 className="mb-3 text-base font-extrabold">{t("gallery")}</h2>
+              <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
+                {photos.map((g) => (
+                  <figure key={g.id} className="w-44 shrink-0">
+                    <img
+                      src={g.image_url}
+                      alt={pick(lang, g.title_mr, g.title_en)}
+                      className="h-32 w-44 rounded-3xl object-cover shadow-soft"
+                    />
+                    <figcaption className="mt-1.5 text-xs text-muted-foreground">
+                      {pick(lang, g.title_mr, g.title_en)}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       )}
     </AppLayout>
