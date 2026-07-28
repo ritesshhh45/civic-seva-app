@@ -515,6 +515,8 @@ function GalleryTab({ auth }: { auth: Auth }) {
               title_en: "",
               image_url: "",
               sort_order: r.length + 1,
+              video_url: "",
+              media_type: "photo",
             },
           ])
         }
