@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as TakrariRouteImport } from './routes/takrari'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -24,6 +25,11 @@ const UpdatesRoute = UpdatesRouteImport.update({
 const TakrariRoute = TakrariRouteImport.update({
   id: '/takrari',
   path: '/takrari',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
 }
@@ -69,20 +77,36 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/home' | '/profile' | '/takrari' | '/updates'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/home'
+    | '/profile'
+    | '/sitemap.xml'
+    | '/takrari'
+    | '/updates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/home' | '/profile' | '/takrari' | '/updates'
+  to:
+    | '/'
+    | '/admin'
+    | '/home'
+    | '/profile'
+    | '/sitemap.xml'
+    | '/takrari'
+    | '/updates'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/home'
     | '/profile'
+    | '/sitemap.xml'
     | '/takrari'
     | '/updates'
   fileRoutesById: FileRoutesById
@@ -92,6 +116,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
   UpdatesRoute: typeof UpdatesRoute
 }
@@ -110,6 +135,13 @@ declare module '@tanstack/react-router' {
       path: '/takrari'
       fullPath: '/takrari'
       preLoaderRoute: typeof TakrariRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -148,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
   UpdatesRoute: UpdatesRoute,
 }
