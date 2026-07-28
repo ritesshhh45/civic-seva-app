@@ -13,6 +13,7 @@ import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as TakrariRouteImport } from './routes/takrari'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UpdatesRoute = UpdatesRouteImport.update({
@@ -35,6 +36,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/takrari': typeof TakrariRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/takrari': typeof TakrariRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/takrari': typeof TakrariRoute
@@ -65,14 +74,22 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/profile' | '/takrari' | '/updates'
+  fullPaths: '/' | '/admin' | '/home' | '/profile' | '/takrari' | '/updates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/profile' | '/takrari' | '/updates'
-  id: '__root__' | '/' | '/home' | '/profile' | '/takrari' | '/updates'
+  to: '/' | '/admin' | '/home' | '/profile' | '/takrari' | '/updates'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/home'
+    | '/profile'
+    | '/takrari'
+    | '/updates'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
   TakrariRoute: typeof TakrariRoute
@@ -109,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -121,6 +145,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
   TakrariRoute: TakrariRoute,
