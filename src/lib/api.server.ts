@@ -97,10 +97,13 @@ export async function adminListTapsImpl() {
   }[];
 }
 
-export async function adminListRowsImpl(table: AdminTable) {
-  const { data, error } = await supabaseAdmin.from(table).select("*");
+export async function adminListAdminsImpl() {
+  const { data, error } = await supabaseAdmin
+    .from("admin_users")
+    .select("id, mobile, name, role")
+    .order("created_at", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as Record<string, unknown>[];
+  return (data ?? []) as { id: string; mobile: string; name: string; role: string }[];
 }
 
 export async function saveRowImpl(table: AdminTable, row: Record<string, unknown>) {

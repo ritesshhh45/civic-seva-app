@@ -61,12 +61,12 @@ export const adminListTaps = createServerFn({ method: "POST" })
     return adminListTapsImpl();
   });
 
-export const adminListRows = createServerFn({ method: "POST" })
-  .inputValidator((d: { phone: string; pin: string; table: AdminTableName }) => d)
+export const adminListAdmins = createServerFn({ method: "POST" })
+  .inputValidator((d: { phone: string; pin: string }) => d)
   .handler(async ({ data }) => {
-    const { assertAdmin, adminListRowsImpl } = await import("./api.server");
+    const { assertAdmin, adminListAdminsImpl } = await import("./api.server");
     await assertAdmin(data);
-    return adminListRowsImpl(data.table);
+    return adminListAdminsImpl();
   });
 
 export const adminUpdateConfig = createServerFn({ method: "POST" })
