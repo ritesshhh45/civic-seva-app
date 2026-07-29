@@ -239,7 +239,7 @@ function HomePage() {
                     className="press card-premium w-44 shrink-0 p-4"
                   >
                     {s.logo_url ? (
-                      <img src={s.logo_url} alt="" className="h-10 w-10 rounded-xl object-cover" />
+                      <AppImage src={s.logo_url} alt="" className="h-10 w-10 rounded-xl" />
                     ) : (
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/12 text-primary">
                         <Landmark className="h-5 w-5" />
