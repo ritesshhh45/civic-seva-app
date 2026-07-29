@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { TriangleAlert } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { updatesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -32,7 +33,7 @@ function UpdateDetail() {
           <p className="card-premium p-6 text-center text-sm text-muted-foreground">{t("noUpdates")}</p>
         ) : (
           <article className="card-premium animate-rise overflow-hidden">
-            {u.image_url ? <img src={u.image_url} alt="" className="h-52 w-full object-cover" /> : null}
+            {u.image_url ? <AppImage src={u.image_url} alt="" className="h-52 w-full" /> : null}
             <div className="space-y-3 p-5">
               <div className="flex flex-wrap items-center gap-2">
                 {u.is_important ? (

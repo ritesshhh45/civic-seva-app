@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/AppLayout";
 import { useLang } from "@/lib/i18n";
 import { getDeviceId } from "@/lib/device";
-import { myHistory } from "@/lib/api.functions";
+import { fetchMyHistory } from "@/lib/citizen";
 
 export const Route = createFileRoute("/takrari")({
   head: () => ({
@@ -20,10 +19,9 @@ export const Route = createFileRoute("/takrari")({
 
 function HistoryPage() {
   const { t, lang } = useLang();
-  const fetchHistory = useServerFn(myHistory);
   const { data } = useQuery({
     queryKey: ["my-history"],
-    queryFn: () => fetchHistory({ data: { deviceId: getDeviceId() } }),
+    queryFn: () => fetchMyHistory(getDeviceId()),
   });
 
   return (

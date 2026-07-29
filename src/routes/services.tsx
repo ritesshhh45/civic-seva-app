@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/AppLayout";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import { categoriesQuery, configQuery, serviceMessage, waLink } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 import { getDeviceId } from "@/lib/device";
-import { logTap } from "@/lib/api.functions";
+import { logComplaintTap } from "@/lib/citizen";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -30,7 +29,6 @@ function ServicesPage() {
   const { lang, t } = useLang();
   const { data: config } = useQuery(configQuery);
   const { data: categories } = useQuery(categoriesQuery);
-  const tap = useServerFn(logTap);
 
   return (
     <AppLayout title={t("services")} subtitle={t("servicesSub")}>
@@ -50,14 +48,12 @@ function ServicesPage() {
           );
           const win = window.open(url, "_blank");
           try {
-            await tap({
-              data: {
-                deviceId: getDeviceId(),
-                name: profile.name,
-                mobile: profile.mobile,
-                categoryId: id,
-                categoryName: label,
-              },
+            await logComplaintTap({
+              deviceId: getDeviceId(),
+              name: profile.name,
+              mobile: profile.mobile,
+              categoryId: id,
+              categoryName: label,
             });
           } catch {
             /* logging must never block the citizen */

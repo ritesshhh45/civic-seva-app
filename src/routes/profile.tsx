@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { clearProfile, getProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
-import { lookupRole } from "@/lib/api.functions";
+import { lookupAdminRole } from "@/lib/citizen";
+import { AppImage } from "@/components/AppImage";
 import { pick, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/profile")({
@@ -27,13 +27,12 @@ function ProfilePage() {
   const navigate = useNavigate();
   const { data: config } = useQuery(configQuery);
   const { data: gallery } = useQuery(galleryQuery);
-  const checkRole = useServerFn(lookupRole);
 
   const { data: roleData } = useQuery({
     queryKey: ["my-role"],
-    queryFn: () => checkRole({ data: { mobile: getProfile()?.mobile ?? "" } }),
+    queryFn: () => lookupAdminRole(getProfile()?.mobile ?? ""),
   });
-  const isAdmin = roleData?.role === "admin" || roleData?.role === "super_admin";
+  const isAdmin = roleData === "admin" || roleData === "super_admin";
 
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
   const videos = (gallery ?? []).filter((g) => g.media_type === "video");
@@ -88,10 +87,10 @@ function ProfilePage() {
               <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5">
                 {photos.map((g) => (
                   <figure key={g.id} className="w-44 shrink-0">
-                    <img
+                    <AppImage
                       src={g.image_url}
                       alt={pick(lang, g.title_mr, g.title_en)}
-                      className="h-32 w-44 rounded-3xl object-cover shadow-soft"
+                      className="h-32 w-44 rounded-3xl shadow-soft"
                     />
                     <figcaption className="mt-1.5 text-xs text-muted-foreground">
                       {pick(lang, g.title_mr, g.title_en)}
@@ -115,7 +114,7 @@ function ProfilePage() {
                     className="press card-premium flex items-center gap-3 p-3"
                   >
                     {g.image_url ? (
-                      <img src={g.image_url} alt="" className="h-16 w-24 rounded-2xl object-cover" />
+                      <AppImage src={g.image_url} alt="" className="h-16 w-24 rounded-2xl" />
                     ) : (
                       <span className="flex h-16 w-24 items-center justify-center rounded-2xl bg-primary/12 text-primary">
                         <PlayCircle className="h-6 w-6" />

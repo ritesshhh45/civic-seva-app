@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Landmark, ChevronRight } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { schemesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -68,7 +69,7 @@ function SchemesPage() {
                     className="press card-premium animate-rise flex items-center gap-4 p-4"
                   >
                     {s.logo_url ? (
-                      <img src={s.logo_url} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+                      <AppImage src={s.logo_url} alt="" className="h-14 w-14 rounded-2xl" />
                     ) : (
                       <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/12 text-primary">
                         <Landmark className="h-6 w-6" />

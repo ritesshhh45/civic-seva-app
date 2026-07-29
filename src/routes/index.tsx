@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { configQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 import { getDeviceId, getProfile, saveProfile } from "@/lib/device";
-import { registerUser } from "@/lib/api.functions";
+import { registerCitizen } from "@/lib/citizen";
 import { requestNotificationPermission } from "@/lib/push";
 import { LangToggle } from "@/components/LangToggle";
+import { AppImage } from "@/components/AppImage";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -100,7 +100,6 @@ function Entry() {
 function LoginScreen() {
   const navigate = useNavigate();
   const { t } = useLang();
-  const register = useServerFn(registerUser);
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -113,11 +112,11 @@ function LoginScreen() {
     setError(null);
     setBusy(true);
     try {
-      await register({ data: { deviceId: getDeviceId(), name: name.trim(), mobile: mobile.trim() } });
+      await registerCitizen({ deviceId: getDeviceId(), name: name.trim(), mobile: mobile.trim() });
       saveProfile({ name: name.trim(), mobile: mobile.trim() });
       navigate({ to: "/home" });
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : "Something went wrong. Please try again.");
     } finally {
       setBusy(false);
     }

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Landmark, ExternalLink, CalendarClock } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { schemesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -47,13 +48,13 @@ function SchemeDetail() {
           <div className="space-y-4 pb-6">
             <div className="card-premium animate-rise overflow-hidden">
               {s.banner_url ? (
-                <img src={s.banner_url} alt="" className="h-40 w-full object-cover" />
+                <AppImage src={s.banner_url} alt="" className="h-40 w-full" />
               ) : (
                 <div className="saffron-gradient h-24 w-full" />
               )}
               <div className="flex items-center gap-3 p-4">
                 {s.logo_url ? (
-                  <img src={s.logo_url} alt="" className="h-14 w-14 rounded-2xl object-cover" />
+                  <AppImage src={s.logo_url} alt="" className="h-14 w-14 rounded-2xl" />
                 ) : (
                   <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/12 text-primary">
                     <Landmark className="h-6 w-6" />
