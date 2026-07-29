@@ -55,10 +55,11 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
               <ChevronLeft className="h-5 w-5" />
             </button>
           ) : config?.photo_url ? (
-            <img
+            <AppImage
               src={config.photo_url}
               alt={pick(lang, config.rep_name_mr, config.rep_name_en)}
-              className="h-12 w-12 rounded-2xl object-cover object-top ring-2 ring-primary/25"
+              position="top"
+              className="h-12 w-12 shrink-0 rounded-2xl ring-2 ring-primary/25"
             />
           ) : null}
 
