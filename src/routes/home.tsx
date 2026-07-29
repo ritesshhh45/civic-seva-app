@@ -184,7 +184,7 @@ function HomePage() {
                 {activeWorks.map((w) => (
                   <article key={w.id} className="card-premium w-40 shrink-0 overflow-hidden">
                     {w.image_url ? (
-                      <img src={w.image_url} alt="" className="h-24 w-full object-cover" />
+                      <AppImage src={w.image_url} alt="" className="h-24 w-full" />
                     ) : (
                       <div className="leaf-soft flex h-24 w-full items-center justify-center text-accent">
                         <CategoryIcon name={w.icon} className="h-8 w-8" />
