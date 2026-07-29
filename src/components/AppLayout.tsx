@@ -5,6 +5,7 @@ import { Bell, ChevronLeft } from "lucide-react";
 import { getProfile, type Profile } from "@/lib/device";
 import { configQuery, updatesQuery } from "@/lib/queries";
 import { BottomNav } from "./BottomNav";
+import { AppImage } from "./AppImage";
 import { LangToggle } from "./LangToggle";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -84,7 +85,7 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
           </div>
 
           {!back && config?.party_logo_url ? (
-            <img src={config.party_logo_url} alt="" className="h-9 w-9 rounded-full object-contain" />
+            <AppImage src={config.party_logo_url} alt="" fallback="none" className="h-9 w-9 shrink-0 rounded-full bg-card" />
           ) : null}
 
           <Link
