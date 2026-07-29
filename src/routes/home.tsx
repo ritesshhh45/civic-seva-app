@@ -75,13 +75,14 @@ function HomePage() {
           {/* Hero card */}
           <section className="glass-card animate-rise overflow-hidden">
             <div className="flex items-center gap-4 p-5">
-              {config?.photo_url ? (
-                <img
-                  src={config.photo_url}
-                  alt={pick(lang, config.rep_name_mr, config.rep_name_en)}
-                  className="h-24 w-24 rounded-3xl object-cover object-top shadow-soft"
-                />
-              ) : null}
+              <AppImage
+                src={config?.photo_url}
+                alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
+                position="top"
+                fallback="none"
+                className="h-24 w-24 shrink-0 rounded-3xl shadow-soft ring-1 ring-primary/15"
+              />
+
               <div className="min-w-0">
                 <h1 className="text-xl font-extrabold leading-tight">
                   {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
