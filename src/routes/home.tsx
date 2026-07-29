@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Phone, MessageCircle, MapPin, TriangleAlert, ArrowRight, ChevronRight, Landmark } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import {
   configQuery,
@@ -74,13 +75,14 @@ function HomePage() {
           {/* Hero card */}
           <section className="glass-card animate-rise overflow-hidden">
             <div className="flex items-center gap-4 p-5">
-              {config?.photo_url ? (
-                <img
-                  src={config.photo_url}
-                  alt={pick(lang, config.rep_name_mr, config.rep_name_en)}
-                  className="h-24 w-24 rounded-3xl object-cover object-top shadow-soft"
-                />
-              ) : null}
+              <AppImage
+                src={config?.photo_url}
+                alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
+                position="top"
+                fallback="none"
+                className="h-24 w-24 shrink-0 rounded-3xl shadow-soft ring-1 ring-primary/15"
+              />
+
               <div className="min-w-0">
                 <h1 className="text-xl font-extrabold leading-tight">
                   {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
@@ -150,7 +152,7 @@ function HomePage() {
                     className="press card-premium w-[75%] shrink-0 snap-start overflow-hidden"
                   >
                     {u.image_url ? (
-                      <img src={u.image_url} alt="" className="h-32 w-full object-cover" />
+                      <AppImage src={u.image_url} alt="" className="h-32 w-full" />
                     ) : (
                       <div className="saffron-gradient h-20 w-full opacity-90" />
                     )}
@@ -182,7 +184,7 @@ function HomePage() {
                 {activeWorks.map((w) => (
                   <article key={w.id} className="card-premium w-40 shrink-0 overflow-hidden">
                     {w.image_url ? (
-                      <img src={w.image_url} alt="" className="h-24 w-full object-cover" />
+                      <AppImage src={w.image_url} alt="" className="h-24 w-full" />
                     ) : (
                       <div className="leaf-soft flex h-24 w-full items-center justify-center text-accent">
                         <CategoryIcon name={w.icon} className="h-8 w-8" />
@@ -237,7 +239,7 @@ function HomePage() {
                     className="press card-premium w-44 shrink-0 p-4"
                   >
                     {s.logo_url ? (
-                      <img src={s.logo_url} alt="" className="h-10 w-10 rounded-xl object-cover" />
+                      <AppImage src={s.logo_url} alt="" className="h-10 w-10 rounded-xl" />
                     ) : (
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/12 text-primary">
                         <Landmark className="h-5 w-5" />
@@ -262,10 +264,10 @@ function HomePage() {
               <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
                 {photos.map((g) => (
                   <figure key={g.id} className="w-44 shrink-0">
-                    <img
+                    <AppImage
                       src={g.image_url}
                       alt={pick(lang, g.title_mr, g.title_en)}
-                      className="h-32 w-44 rounded-3xl object-cover shadow-soft"
+                      className="h-32 w-44 rounded-3xl shadow-soft"
                     />
                     <figcaption className="mt-1.5 text-xs text-muted-foreground">
                       {pick(lang, g.title_mr, g.title_en)}

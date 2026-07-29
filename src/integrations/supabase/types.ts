@@ -14,27 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_users: {
+      admin_auth: {
+        Row: {
+          id: boolean
+          pin_hash: string
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          pin_hash: string
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          pin_hash?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_sessions: {
         Row: {
           created_at: string
-          id: string
+          expires_at: string
           mobile: string
-          name: string
-          role: string
+          token: string
         }
         Insert: {
           created_at?: string
-          id?: string
+          expires_at?: string
           mobile: string
-          name?: string
-          role?: string
+          token?: string
         }
         Update: {
           created_at?: string
+          expires_at?: string
+          mobile?: string
+          token?: string
+        }
+        Relationships: []
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          decided_at: string | null
+          id: string
+          mobile: string
+          name: string
+          requested_at: string
+          role: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string | null
+          id?: string
+          mobile: string
+          name?: string
+          requested_at?: string
+          role?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string | null
           id?: string
           mobile?: string
           name?: string
+          requested_at?: string
           role?: string
+          status?: string
         }
         Relationships: []
       }
@@ -250,6 +298,30 @@ export type Database = {
         }
         Relationships: []
       }
+      media_assets: {
+        Row: {
+          content_type: string
+          created_at: string
+          data: string
+          filename: string
+          id: string
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          data: string
+          filename?: string
+          id?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          data?: string
+          filename?: string
+          id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body_en: string
@@ -459,7 +531,92 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_delete_image: {
+        Args: { _id: string; _token: string }
+        Returns: Json
+      }
+      admin_delete_row: {
+        Args: { _id: string; _table: string; _token: string }
+        Returns: Json
+      }
+      admin_list_admins: {
+        Args: { _token: string }
+        Returns: {
+          id: string
+          mobile: string
+          name: string
+          requested_at: string
+          role: string
+          status: string
+        }[]
+      }
+      admin_list_images: {
+        Args: { _token: string }
+        Returns: {
+          content_type: string
+          created_at: string
+          filename: string
+          id: string
+        }[]
+      }
+      admin_list_taps: {
+        Args: { _token: string }
+        Returns: {
+          category_name: string
+          created_at: string
+          id: string
+          mobile: string
+          user_name: string
+        }[]
+      }
+      admin_login: { Args: { _mobile: string; _pin: string }; Returns: Json }
+      admin_role_for_token: { Args: { _token: string }; Returns: string }
+      admin_save_row: {
+        Args: { _row: Json; _table: string; _token: string }
+        Returns: Json
+      }
+      admin_session_info: { Args: { _token: string }; Returns: Json }
+      admin_set_admin_status: {
+        Args: { _id: string; _name?: string; _status: string; _token: string }
+        Returns: Json
+      }
+      admin_update_config: {
+        Args: { _patch: Json; _token: string }
+        Returns: Json
+      }
+      admin_upload_image: {
+        Args: {
+          _content_type: string
+          _data: string
+          _filename: string
+          _token: string
+        }
+        Returns: Json
+      }
+      citizen_history: {
+        Args: { _device_id: string }
+        Returns: {
+          category_name: string
+          created_at: string
+          id: string
+        }[]
+      }
+      citizen_log_tap: {
+        Args: {
+          _category_id: string
+          _category_name: string
+          _device_id: string
+          _mobile: string
+          _name: string
+        }
+        Returns: Json
+      }
+      citizen_register: {
+        Args: { _device_id: string; _mobile: string; _name: string }
+        Returns: Json
+      }
+      lookup_admin_role: { Args: { _mobile: string }; Returns: string }
+      norm_mobile: { Args: { _v: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

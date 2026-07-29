@@ -22,6 +22,7 @@ import { Route as UpdatesIndexRouteImport } from './routes/updates.index'
 import { Route as SchemesIndexRouteImport } from './routes/schemes.index'
 import { Route as UpdatesUpdateIdRouteImport } from './routes/updates.$updateId'
 import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
+import { Route as ApiPublicImgIdRouteImport } from './routes/api/public/img.$id'
 
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
@@ -88,6 +89,11 @@ const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
   path: '/$schemeId',
   getParentRoute: () => SchemesRoute,
 } as any)
+const ApiPublicImgIdRoute = ApiPublicImgIdRouteImport.update({
+  id: '/api/public/img/$id',
+  path: '/api/public/img/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes/': typeof SchemesIndexRoute
   '/updates/': typeof UpdatesIndexRoute
+  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes': typeof SchemesIndexRoute
   '/updates': typeof UpdatesIndexRoute
+  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes/': typeof SchemesIndexRoute
   '/updates/': typeof UpdatesIndexRoute
+  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/updates/$updateId'
     | '/schemes/'
     | '/updates/'
+    | '/api/public/img/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/updates/$updateId'
     | '/schemes'
     | '/updates'
+    | '/api/public/img/$id'
   id:
     | '__root__'
     | '/'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/updates/$updateId'
     | '/schemes/'
     | '/updates/'
+    | '/api/public/img/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
   UpdatesRoute: typeof UpdatesRouteWithChildren
+  ApiPublicImgIdRoute: typeof ApiPublicImgIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchemesSchemeIdRouteImport
       parentRoute: typeof SchemesRoute
     }
+    '/api/public/img/$id': {
+      id: '/api/public/img/$id'
+      path: '/api/public/img/$id'
+      fullPath: '/api/public/img/$id'
+      preLoaderRoute: typeof ApiPublicImgIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -323,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
   UpdatesRoute: UpdatesRouteWithChildren,
+  ApiPublicImgIdRoute: ApiPublicImgIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

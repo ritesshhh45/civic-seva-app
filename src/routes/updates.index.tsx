@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Pin, TriangleAlert } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { updatesQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -40,7 +41,7 @@ function UpdatesPage() {
                 params={{ updateId: u.id }}
                 className="press card-premium animate-rise block overflow-hidden"
               >
-                {u.image_url ? <img src={u.image_url} alt="" className="h-36 w-full object-cover" /> : null}
+                {u.image_url ? <AppImage src={u.image_url} alt="" className="h-36 w-full" /> : null}
                 <div className="space-y-1.5 p-4">
                   <div className="flex flex-wrap items-center gap-1.5">
                     {u.is_important ? (
