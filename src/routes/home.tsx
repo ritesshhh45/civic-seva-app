@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Phone, MessageCircle, MapPin, TriangleAlert, ArrowRight, ChevronRight, Landmark } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { AppImage } from "@/components/AppImage";
 import { CategoryIcon } from "@/components/CategoryIcon";
 import {
   configQuery,
