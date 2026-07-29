@@ -264,10 +264,10 @@ function HomePage() {
               <div className="no-scrollbar -mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
                 {photos.map((g) => (
                   <figure key={g.id} className="w-44 shrink-0">
-                    <img
+                    <AppImage
                       src={g.image_url}
                       alt={pick(lang, g.title_mr, g.title_en)}
-                      className="h-32 w-44 rounded-3xl object-cover shadow-soft"
+                      className="h-32 w-44 rounded-3xl shadow-soft"
                     />
                     <figcaption className="mt-1.5 text-xs text-muted-foreground">
                       {pick(lang, g.title_mr, g.title_en)}
