@@ -1,15 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
-import { Phone, MessageCircle, Trash2, Plus, Save } from "lucide-react";
+import { Phone, MessageCircle, Trash2, Plus, Save, ShieldCheck, ShieldX } from "lucide-react";
 import {
   adminDeleteRow,
+  adminListAdmins,
   adminListTaps,
   adminLogin,
   adminSaveRow,
+  adminSessionInfo,
+  adminSetAdminStatus,
   adminUpdateConfig,
-} from "@/lib/api.functions";
+  clearSession,
+  loadSession,
+  saveSession,
+  type AdminSession,
+} from "@/lib/admin";
 import {
   categoriesQuery,
   configQuery,
@@ -27,13 +33,18 @@ import {
   type SchemeRow,
 } from "@/lib/queries";
 import { CrudTab } from "@/components/admin/CrudTab";
+import { ImageField } from "@/components/admin/ImageField";
+import { AppImage } from "@/components/AppImage";
 import { ICON_NAMES, CategoryIcon } from "@/components/CategoryIcon";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin Panel — Ward Seva App" },
-      { name: "description", content: "Manage representative details, categories, citizens and notices." },
+      {
+        name: "description",
+        content: "Manage representative details, categories, citizens and notices.",
+      },
       { property: "og:title", content: "Admin Panel — Ward Seva App" },
       { property: "og:description", content: "Manage app content and citizen follow-ups." },
       { name: "robots", content: "noindex" },
@@ -41,9 +52,6 @@ export const Route = createFileRoute("/admin")({
   }),
   component: AdminPage,
 });
-
-const AUTH_KEY = "seva_admin_auth";
-type Auth = { phone: string; pin: string };
 
 function Field({
   label,
@@ -67,41 +75,64 @@ function Field({
 }
 
 function AdminPage() {
-  const [auth, setAuth] = useState<Auth | null>(null);
+  const [session, setSession] = useState<AdminSession | null>(null);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem(AUTH_KEY);
-    if (raw) {
-      try {
-        setAuth(JSON.parse(raw) as Auth);
-      } catch {
-        /* ignore */
-      }
+    const s = loadSession();
+    if (!s) {
+      setChecked(true);
+      return;
     }
+    adminSessionInfo(s.token)
+      .then((info) => {
+        if (info.status === "ok") setSession(s);
+        else clearSession();
+      })
+      .catch(() => clearSession())
+      .finally(() => setChecked(true));
   }, []);
 
-  if (!auth) return <AdminLogin onSuccess={setAuth} />;
-  return <AdminDashboard auth={auth} onLogout={() => { localStorage.removeItem(AUTH_KEY); setAuth(null); }} />;
+  if (!checked) return <div className="min-h-screen bg-background" />;
+  if (!session) return <AdminLogin onSuccess={setSession} />;
+  return (
+    <AdminDashboard
+      session={session}
+      onLogout={() => {
+        clearSession();
+        setSession(null);
+      }}
+    />
+  );
 }
 
-function AdminLogin({ onSuccess }: { onSuccess: (a: Auth) => void }) {
-  const login = useServerFn(adminLogin);
+function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    setError(null);
+    setMessage(null);
     try {
-      await login({ data: { phone, pin } });
-      const a = { phone, pin };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(a));
-      onSuccess(a);
+      const res = await adminLogin(phone, pin);
+      if (res.status === "ok") {
+        const s = { token: res.token, role: res.role, mobile: res.mobile };
+        saveSession(s);
+        onSuccess(s);
+        return;
+      }
+      setMessage(
+        res.status === "pending"
+          ? "Access request sent. The main admin must approve your number."
+          : res.status === "denied" || res.status === "revoked"
+            ? "Your access request was not approved."
+            : "Invalid phone number or PIN.",
+      );
     } catch {
-      setError("Invalid phone number or PIN");
+      setMessage("Could not sign in. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -112,7 +143,9 @@ function AdminLogin({ onSuccess }: { onSuccess: (a: Auth) => void }) {
       <div className="tricolor-bar h-1.5 w-full" />
       <form onSubmit={submit} className="mx-auto max-w-sm px-5 pt-16">
         <h1 className="text-2xl font-extrabold">Admin panel</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Authorised phone number only.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Approved phone numbers only. New numbers are sent to the main admin for approval.
+        </p>
         <div className="card-soft mt-6 space-y-4 p-5">
           <Field label="Phone number" value={phone} onChange={setPhone} />
           <label className="block">
@@ -124,7 +157,7 @@ function AdminLogin({ onSuccess }: { onSuccess: (a: Auth) => void }) {
               className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </label>
-          {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
+          {message ? <p className="text-sm font-medium text-destructive">{message}</p> : null}
           <button
             disabled={busy}
             className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
@@ -146,16 +179,29 @@ const TABS = [
   "Citizens",
   "Notices",
   "Gallery",
+  "Admins",
 ] as const;
 
-function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }) {
+function AdminDashboard({
+  session,
+  onLogout,
+}: {
+  session: AdminSession;
+  onLogout: () => void;
+}) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
+  const token = session.token;
 
   return (
     <div className="min-h-screen bg-background pb-16">
       <div className="tricolor-bar h-1.5 w-full" />
       <header className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-        <h1 className="text-xl font-extrabold">Admin panel</h1>
+        <div>
+          <h1 className="text-xl font-extrabold">Admin panel</h1>
+          <p className="text-xs text-muted-foreground">
+            {session.mobile} · {session.role.replace("_", " ")}
+          </p>
+        </div>
         <button onClick={onLogout} className="text-sm font-semibold text-destructive">
           Log out
         </button>
@@ -174,14 +220,15 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
         ))}
       </div>
       <main className="mx-auto max-w-3xl px-5">
-        {tab === "Settings" ? <SettingsTab auth={auth} /> : null}
-        {tab === "Categories" ? <CategoriesTab auth={auth} /> : null}
-        {tab === "Citizens" ? <CitizensTab auth={auth} /> : null}
-        {tab === "Notices" ? <NoticesTab auth={auth} /> : null}
-        {tab === "Gallery" ? <GalleryTab auth={auth} /> : null}
+        {tab === "Settings" ? <SettingsTab token={token} /> : null}
+        {tab === "Categories" ? <CategoriesTab token={token} /> : null}
+        {tab === "Citizens" ? <CitizensTab token={token} /> : null}
+        {tab === "Notices" ? <NoticesTab token={token} /> : null}
+        {tab === "Gallery" ? <GalleryTab token={token} /> : null}
+        {tab === "Admins" ? <AdminsTab session={session} /> : null}
         {tab === "Updates" ? (
           <CrudTab<UpdateRow>
-            auth={auth}
+            token={token}
             table="updates"
             queryKey="updates"
             options={updatesQuery}
@@ -208,7 +255,7 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
               { key: "body_en", label: "Body (English)", type: "textarea" },
               { key: "category_mr", label: "Category (Marathi)" },
               { key: "category_en", label: "Category (English)" },
-              { key: "image_url", label: "Image URL" },
+              { key: "image_url", label: "Photo", type: "image" },
               { key: "publish_at", label: "Publish at (ISO)" },
               { key: "is_pinned", label: "Pinned", type: "bool" },
               { key: "is_important", label: "Breaking / important", type: "bool" },
@@ -218,7 +265,7 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
         ) : null}
         {tab === "Works" ? (
           <CrudTab<WorkRow>
-            auth={auth}
+            token={token}
             table="works"
             queryKey="works"
             options={worksQuery}
@@ -243,7 +290,7 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
               { key: "desc_en", label: "Description (English)", type: "textarea" },
               { key: "status_mr", label: "Status (Marathi)" },
               { key: "status_en", label: "Status (English)" },
-              { key: "image_url", label: "Image URL" },
+              { key: "image_url", label: "Photo", type: "image" },
               { key: "icon", label: "Icon name" },
               { key: "sort_order", label: "Order", type: "number" },
               { key: "is_active", label: "Active", type: "bool" },
@@ -252,7 +299,7 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
         ) : null}
         {tab === "Schemes" ? (
           <CrudTab<SchemeRow>
-            auth={auth}
+            token={token}
             table="schemes"
             queryKey="schemes"
             options={schemesQuery}
@@ -285,8 +332,8 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
               { key: "name_en", label: "Name (English)" },
               { key: "category_mr", label: "Category (Marathi)" },
               { key: "category_en", label: "Category (English)" },
-              { key: "logo_url", label: "Logo URL" },
-              { key: "banner_url", label: "Banner URL" },
+              { key: "logo_url", label: "Logo", type: "image" },
+              { key: "banner_url", label: "Banner", type: "image" },
               { key: "desc_mr", label: "Description (Marathi)", type: "textarea" },
               { key: "desc_en", label: "Description (English)", type: "textarea" },
               { key: "eligibility_mr", label: "Eligibility (Marathi)", type: "textarea" },
@@ -309,11 +356,9 @@ function AdminDashboard({ auth, onLogout }: { auth: Auth; onLogout: () => void }
   );
 }
 
-
-function SettingsTab({ auth }: { auth: Auth }) {
+function SettingsTab({ token }: { token: string }) {
   const qc = useQueryClient();
   const { data } = useQuery(configQuery);
-  const save = useServerFn(adminUpdateConfig);
   const [form, setForm] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<string | null>(null);
 
@@ -330,11 +375,11 @@ function SettingsTab({ auth }: { auth: Auth }) {
   const submit = async () => {
     setStatus(null);
     try {
-      await save({ data: { ...auth, patch: form } });
+      await adminUpdateConfig(token, form);
       await qc.invalidateQueries({ queryKey: ["app_config"] });
-      setStatus("Saved");
-    } catch {
-      setStatus("Could not save");
+      setStatus("Saved — live for everyone");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Could not save");
     }
   };
 
@@ -349,19 +394,34 @@ function SettingsTab({ auth }: { auth: Auth }) {
     ["tagline_en", "Tagline (English)"],
     ["party_name_mr", "Party name (Marathi)"],
     ["party_name_en", "Party name (English)"],
-    ["photo_url", "Representative photo URL"],
-    ["party_logo_url", "Party logo URL"],
     ["app_name", "App name (store listing)"],
-    ["app_icon_url", "App icon URL (store listing)"],
     ["phone", "Phone number"],
     ["whatsapp", "WhatsApp number"],
     ["accent_color", "Accent colour (hex)"],
-    ["admin_phone", "Admin phone number"],
+    ["admin_phone", "Main admin phone number"],
+    ["office_address_mr", "Office address (Marathi)"],
+    ["office_address_en", "Office address (English)"],
+    ["office_map_url", "Office map link"],
+  ];
+
+  const images: [string, string][] = [
+    ["photo_url", "Representative photo"],
+    ["party_logo_url", "Party logo"],
+    ["app_icon_url", "App icon (store listing)"],
   ];
 
   return (
     <div className="card-soft space-y-4 p-5">
       <div className="grid gap-4 sm:grid-cols-2">
+        {images.map(([key, label]) => (
+          <ImageField
+            key={key}
+            label={label}
+            token={token}
+            value={form[key] ?? ""}
+            onChange={set(key)}
+          />
+        ))}
         {fields.map(([key, label]) => (
           <Field key={key} label={label} value={form[key] ?? ""} onChange={set(key)} />
         ))}
@@ -379,12 +439,107 @@ function SettingsTab({ auth }: { auth: Auth }) {
   );
 }
 
-function CategoriesTab({ auth }: { auth: Auth }) {
+function AdminsTab({ session }: { session: AdminSession }) {
+  const { data, refetch } = useQuery({
+    queryKey: ["admin-admins"],
+    queryFn: () => adminListAdmins(session.token),
+  });
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const act = async (id: string, status: "approved" | "denied" | "revoked") => {
+    setBusy(id);
+    try {
+      await adminSetAdminStatus(session.token, id, status);
+      await refetch();
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const rows = data ?? [];
+  const pending = rows.filter((r) => r.status === "pending");
+  const others = rows.filter((r) => r.status !== "pending");
+  const canManage = session.role === "super_admin";
+
+  return (
+    <div className="space-y-6">
+      <section className="space-y-3">
+        <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
+          Pending access requests
+        </h2>
+        {pending.length === 0 ? (
+          <p className="card-soft p-5 text-sm text-muted-foreground">No pending requests.</p>
+        ) : (
+          pending.map((r) => (
+            <div key={r.id} className="card-soft flex items-center gap-3 p-4">
+              <div className="min-w-0 flex-1">
+                <p className="font-bold">{r.name || r.mobile}</p>
+                <p className="text-xs text-muted-foreground">
+                  {r.mobile} · requested {new Date(r.requested_at).toLocaleString("en-IN")}
+                </p>
+              </div>
+              {canManage ? (
+                <>
+                  <button
+                    disabled={busy === r.id}
+                    onClick={() => act(r.id, "approved")}
+                    className="flex items-center gap-1.5 rounded-lg bg-secondary px-3 py-2 text-xs font-bold text-secondary-foreground"
+                  >
+                    <ShieldCheck className="h-4 w-4" /> Allow
+                  </button>
+                  <button
+                    disabled={busy === r.id}
+                    onClick={() => act(r.id, "denied")}
+                    className="flex items-center gap-1.5 rounded-lg border border-destructive/30 px-3 py-2 text-xs font-bold text-destructive"
+                  >
+                    <ShieldX className="h-4 w-4" /> Deny
+                  </button>
+                </>
+              ) : null}
+            </div>
+          ))
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-extrabold uppercase tracking-wide text-muted-foreground">
+          Admins
+        </h2>
+        {others.map((r) => (
+          <div key={r.id} className="card-soft flex items-center gap-3 p-4">
+            <div className="min-w-0 flex-1">
+              <p className="font-bold">{r.name || r.mobile}</p>
+              <p className="text-xs text-muted-foreground">
+                {r.mobile} · {r.role.replace("_", " ")} · {r.status}
+              </p>
+            </div>
+            {canManage && r.role !== "super_admin" ? (
+              <button
+                disabled={busy === r.id}
+                onClick={() => act(r.id, r.status === "approved" ? "revoked" : "approved")}
+                className="rounded-lg border border-input px-3 py-2 text-xs font-bold"
+              >
+                {r.status === "approved" ? "Revoke" : "Allow"}
+              </button>
+            ) : null}
+          </div>
+        ))}
+      </section>
+
+      {!canManage ? (
+        <p className="text-xs text-muted-foreground">
+          Only the main admin can allow or deny access requests.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function CategoriesTab({ token }: { token: string }) {
   const qc = useQueryClient();
   const { data } = useQuery(categoriesQuery);
-  const save = useServerFn(adminSaveRow);
-  const remove = useServerFn(adminDeleteRow);
   const [rows, setRows] = useState<Category[]>([]);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => setRows(data ?? []), [data]);
 
@@ -393,14 +548,14 @@ function CategoriesTab({ auth }: { auth: Auth }) {
 
   const persist = async (row: Category) => {
     const { id, ...rest } = row;
-    await save({
-      data: {
-        ...auth,
-        table: "categories",
-        row: id.startsWith("new-") ? rest : { id, ...rest },
-      },
-    });
-    await qc.invalidateQueries({ queryKey: ["categories"] });
+    setStatus(null);
+    try {
+      await adminSaveRow(token, "categories", id.startsWith("new-") ? rest : { id, ...rest });
+      await qc.invalidateQueries({ queryKey: ["categories"] });
+      setStatus("Saved — live for everyone");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Could not save");
+    }
   };
 
   const del = async (row: Category) => {
@@ -408,32 +563,35 @@ function CategoriesTab({ auth }: { auth: Auth }) {
       setRows((r) => r.filter((x) => x.id !== row.id));
       return;
     }
-    await remove({ data: { ...auth, table: "categories", id: row.id } });
+    await adminDeleteRow(token, "categories", row.id);
     await qc.invalidateQueries({ queryKey: ["categories"] });
   };
 
   return (
     <div className="space-y-4">
-      <button
-        onClick={() =>
-          setRows((r) => [
-            ...r,
-            {
-              id: `new-${crypto.randomUUID()}`,
-              name_mr: "",
-              name_en: "",
-              icon: "CircleAlert",
-              message_mr: "",
-              message_en: "",
-              sort_order: r.length + 1,
-              is_active: true,
-            },
-          ])
-        }
-        className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
-      >
-        <Plus className="h-4 w-4" /> Add category
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() =>
+            setRows((r) => [
+              ...r,
+              {
+                id: `new-${crypto.randomUUID()}`,
+                name_mr: "",
+                name_en: "",
+                icon: "CircleAlert",
+                message_mr: "",
+                message_en: "",
+                sort_order: r.length + 1,
+                is_active: true,
+              },
+            ])
+          }
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> Add category
+        </button>
+        {status ? <span className="text-sm text-muted-foreground">{status}</span> : null}
+      </div>
 
       {rows.map((row, i) => (
         <div key={row.id} className="card-soft space-y-3 p-4">
@@ -462,8 +620,16 @@ function CategoriesTab({ auth }: { auth: Auth }) {
             </label>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Name (Marathi)" value={row.name_mr} onChange={(v) => update(i, { name_mr: v })} />
-            <Field label="Name (English)" value={row.name_en} onChange={(v) => update(i, { name_en: v })} />
+            <Field
+              label="Name (Marathi)"
+              value={row.name_mr}
+              onChange={(v) => update(i, { name_mr: v })}
+            />
+            <Field
+              label="Name (English)"
+              value={row.name_en}
+              onChange={(v) => update(i, { name_en: v })}
+            />
             <Field
               label="WhatsApp message (Marathi)"
               value={row.message_mr}
@@ -500,15 +666,16 @@ function CategoriesTab({ auth }: { auth: Auth }) {
   );
 }
 
-function CitizensTab({ auth }: { auth: Auth }) {
-  const listTaps = useServerFn(adminListTaps);
+function CitizensTab({ token }: { token: string }) {
   const { data } = useQuery({
     queryKey: ["admin-taps"],
-    queryFn: () => listTaps({ data: auth }),
+    queryFn: () => adminListTaps(token),
   });
 
   if (!data || data.length === 0)
-    return <p className="card-soft p-6 text-center text-sm text-muted-foreground">No complaints yet.</p>;
+    return (
+      <p className="card-soft p-6 text-center text-sm text-muted-foreground">No complaints yet.</p>
+    );
 
   return (
     <ul className="space-y-3">
@@ -543,12 +710,11 @@ function CitizensTab({ auth }: { auth: Auth }) {
   );
 }
 
-function NoticesTab({ auth }: { auth: Auth }) {
+function NoticesTab({ token }: { token: string }) {
   const qc = useQueryClient();
   const { data } = useQuery(notificationsQuery);
-  const save = useServerFn(adminSaveRow);
-  const remove = useServerFn(adminDeleteRow);
   const [rows, setRows] = useState<NotificationRow[]>([]);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => setRows(data ?? []), [data]);
 
@@ -558,46 +724,69 @@ function NoticesTab({ auth }: { auth: Auth }) {
   const persist = async (row: NotificationRow) => {
     const { id, created_at, ...rest } = row;
     void created_at;
-    await save({
-      data: { ...auth, table: "notifications", row: id.startsWith("new-") ? rest : { id, ...rest } },
-    });
-    await qc.invalidateQueries({ queryKey: ["notifications"] });
+    setStatus(null);
+    try {
+      await adminSaveRow(token, "notifications", id.startsWith("new-") ? rest : { id, ...rest });
+      await qc.invalidateQueries({ queryKey: ["notifications"] });
+      setStatus("Saved — live for everyone");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Could not save");
+    }
   };
 
   const del = async (row: NotificationRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await remove({ data: { ...auth, table: "notifications", id: row.id } });
+    await adminDeleteRow(token, "notifications", row.id);
     await qc.invalidateQueries({ queryKey: ["notifications"] });
   };
 
   return (
     <div className="space-y-4">
-      <button
-        onClick={() =>
-          setRows((r) => [
-            {
-              id: `new-${crypto.randomUUID()}`,
-              title_mr: "",
-              title_en: "",
-              body_mr: "",
-              body_en: "",
-              created_at: new Date().toISOString(),
-            },
-            ...r,
-          ])
-        }
-        className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
-      >
-        <Plus className="h-4 w-4" /> New notification
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() =>
+            setRows((r) => [
+              {
+                id: `new-${crypto.randomUUID()}`,
+                title_mr: "",
+                title_en: "",
+                body_mr: "",
+                body_en: "",
+                created_at: new Date().toISOString(),
+              },
+              ...r,
+            ])
+          }
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> New notification
+        </button>
+        {status ? <span className="text-sm text-muted-foreground">{status}</span> : null}
+      </div>
 
       {rows.map((row, i) => (
         <div key={row.id} className="card-soft space-y-3 p-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Title (Marathi)" value={row.title_mr} onChange={(v) => update(i, { title_mr: v })} />
-            <Field label="Title (English)" value={row.title_en} onChange={(v) => update(i, { title_en: v })} />
-            <Field label="Message (Marathi)" value={row.body_mr} onChange={(v) => update(i, { body_mr: v })} />
-            <Field label="Message (English)" value={row.body_en} onChange={(v) => update(i, { body_en: v })} />
+            <Field
+              label="Title (Marathi)"
+              value={row.title_mr}
+              onChange={(v) => update(i, { title_mr: v })}
+            />
+            <Field
+              label="Title (English)"
+              value={row.title_en}
+              onChange={(v) => update(i, { title_en: v })}
+            />
+            <Field
+              label="Message (Marathi)"
+              value={row.body_mr}
+              onChange={(v) => update(i, { body_mr: v })}
+            />
+            <Field
+              label="Message (English)"
+              value={row.body_en}
+              onChange={(v) => update(i, { body_en: v })}
+            />
           </div>
           <div className="flex gap-3">
             <button
@@ -619,12 +808,11 @@ function NoticesTab({ auth }: { auth: Auth }) {
   );
 }
 
-function GalleryTab({ auth }: { auth: Auth }) {
+function GalleryTab({ token }: { token: string }) {
   const qc = useQueryClient();
   const { data } = useQuery(galleryQuery);
-  const save = useServerFn(adminSaveRow);
-  const remove = useServerFn(adminDeleteRow);
   const [rows, setRows] = useState<GalleryRow[]>([]);
+  const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => setRows(data ?? []), [data]);
 
@@ -633,49 +821,83 @@ function GalleryTab({ auth }: { auth: Auth }) {
 
   const persist = async (row: GalleryRow) => {
     const { id, ...rest } = row;
-    await save({
-      data: { ...auth, table: "gallery", row: id.startsWith("new-") ? rest : { id, ...rest } },
-    });
-    await qc.invalidateQueries({ queryKey: ["gallery"] });
+    setStatus(null);
+    try {
+      await adminSaveRow(token, "gallery", id.startsWith("new-") ? rest : { id, ...rest });
+      await qc.invalidateQueries({ queryKey: ["gallery"] });
+      setStatus("Saved — live for everyone");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "Could not save");
+    }
   };
 
   const del = async (row: GalleryRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await remove({ data: { ...auth, table: "gallery", id: row.id } });
+    await adminDeleteRow(token, "gallery", row.id);
     await qc.invalidateQueries({ queryKey: ["gallery"] });
   };
 
   return (
     <div className="space-y-4">
-      <button
-        onClick={() =>
-          setRows((r) => [
-            ...r,
-            {
-              id: `new-${crypto.randomUUID()}`,
-              title_mr: "",
-              title_en: "",
-              image_url: "",
-              sort_order: r.length + 1,
-              video_url: "",
-              media_type: "photo",
-            },
-          ])
-        }
-        className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
-      >
-        <Plus className="h-4 w-4" /> Add photo
-      </button>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() =>
+            setRows((r) => [
+              ...r,
+              {
+                id: `new-${crypto.randomUUID()}`,
+                title_mr: "",
+                title_en: "",
+                image_url: "",
+                sort_order: r.length + 1,
+                video_url: "",
+                media_type: "photo",
+              },
+            ])
+          }
+          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+        >
+          <Plus className="h-4 w-4" /> Add photo / video
+        </button>
+        {status ? <span className="text-sm text-muted-foreground">{status}</span> : null}
+      </div>
 
       {rows.map((row, i) => (
         <div key={row.id} className="card-soft space-y-3 p-4">
-          {row.image_url ? (
-            <img src={row.image_url} alt={row.title_en} className="h-32 w-full rounded-xl object-cover" />
-          ) : null}
+          <AppImage src={row.image_url} alt={row.title_en} className="h-32 w-full rounded-xl" />
           <div className="grid gap-3 sm:grid-cols-2">
-            <Field label="Caption (Marathi)" value={row.title_mr} onChange={(v) => update(i, { title_mr: v })} />
-            <Field label="Caption (English)" value={row.title_en} onChange={(v) => update(i, { title_en: v })} />
-            <Field label="Image URL" value={row.image_url} onChange={(v) => update(i, { image_url: v })} />
+            <ImageField
+              label="Photo"
+              token={token}
+              value={row.image_url}
+              onChange={(v) => update(i, { image_url: v })}
+            />
+            <Field
+              label="Caption (Marathi)"
+              value={row.title_mr}
+              onChange={(v) => update(i, { title_mr: v })}
+            />
+            <Field
+              label="Caption (English)"
+              value={row.title_en}
+              onChange={(v) => update(i, { title_en: v })}
+            />
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Media type</span>
+              <select
+                value={row.media_type}
+                onChange={(e) => update(i, { media_type: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="photo">Photo</option>
+                <option value="video">Video</option>
+              </select>
+            </label>
+            <Field
+              label="Video link (YouTube)"
+              value={row.video_url}
+              onChange={(v) => update(i, { video_url: v })}
+            />
             <Field
               label="Order"
               value={String(row.sort_order)}
