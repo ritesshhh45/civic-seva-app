@@ -298,6 +298,30 @@ export type Database = {
         }
         Relationships: []
       }
+      media_assets: {
+        Row: {
+          content_type: string
+          created_at: string
+          data: string
+          filename: string
+          id: string
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          data: string
+          filename?: string
+          id?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          data?: string
+          filename?: string
+          id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body_en: string
@@ -507,6 +531,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_delete_image: {
+        Args: { _id: string; _token: string }
+        Returns: Json
+      }
       admin_delete_row: {
         Args: { _id: string; _table: string; _token: string }
         Returns: Json
@@ -520,6 +548,15 @@ export type Database = {
           requested_at: string
           role: string
           status: string
+        }[]
+      }
+      admin_list_images: {
+        Args: { _token: string }
+        Returns: {
+          content_type: string
+          created_at: string
+          filename: string
+          id: string
         }[]
       }
       admin_list_taps: {
@@ -545,6 +582,15 @@ export type Database = {
       }
       admin_update_config: {
         Args: { _patch: Json; _token: string }
+        Returns: Json
+      }
+      admin_upload_image: {
+        Args: {
+          _content_type: string
+          _data: string
+          _filename: string
+          _token: string
+        }
         Returns: Json
       }
       citizen_history: {
