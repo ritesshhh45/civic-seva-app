@@ -152,7 +152,7 @@ function HomePage() {
                     className="press card-premium w-[75%] shrink-0 snap-start overflow-hidden"
                   >
                     {u.image_url ? (
-                      <img src={u.image_url} alt="" className="h-32 w-full object-cover" />
+                      <AppImage src={u.image_url} alt="" className="h-32 w-full" />
                     ) : (
                       <div className="saffron-gradient h-20 w-full opacity-90" />
                     )}
