@@ -6,16 +6,19 @@ import {
   adminDeleteRow,
   adminListAdmins,
   adminListTaps,
-  adminLogin,
+  adminMe,
   adminSaveRow,
-  adminSessionInfo,
+  adminSendReset,
   adminSetAdminStatus,
+  adminSetPassword,
+  adminSignIn,
+  adminSignOut,
+  adminSignUp,
   adminUpdateConfig,
-  clearSession,
-  loadSession,
-  saveSession,
-  type AdminSession,
+  type AdminMe,
 } from "@/lib/admin";
+import { supabase } from "@/integrations/supabase/client";
+
 import {
   categoriesQuery,
   configQuery,
