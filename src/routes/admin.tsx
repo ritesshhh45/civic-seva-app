@@ -220,11 +220,11 @@ function AdminDashboard({
         ))}
       </div>
       <main className="mx-auto max-w-3xl px-5">
-        {tab === "Settings" ? <SettingsTab token={token} /> : null}
-        {tab === "Categories" ? <CategoriesTab token={token} /> : null}
-        {tab === "Citizens" ? <CitizensTab token={token} /> : null}
-        {tab === "Notices" ? <NoticesTab token={token} /> : null}
-        {tab === "Gallery" ? <GalleryTab token={token} /> : null}
+        {tab === "Settings" ? <SettingsTab /> : null}
+        {tab === "Categories" ? <CategoriesTab /> : null}
+        {tab === "Citizens" ? <CitizensTab /> : null}
+        {tab === "Notices" ? <NoticesTab /> : null}
+        {tab === "Gallery" ? <GalleryTab /> : null}
         {tab === "Admins" ? <AdminsTab session={session} /> : null}
         {tab === "Updates" ? (
           <CrudTab<UpdateRow>
@@ -353,7 +353,7 @@ function AdminDashboard({
   );
 }
 
-function SettingsTab({ token }: { token: string }) {
+function SettingsTab() {
   const qc = useQueryClient();
   const { data } = useQuery(configQuery);
   const [form, setForm] = useState<Record<string, string>>({});
@@ -438,14 +438,14 @@ function SettingsTab({ token }: { token: string }) {
 function AdminsTab({ session }: { session: AdminSession }) {
   const { data, refetch } = useQuery({
     queryKey: ["admin-admins"],
-    queryFn: () => adminListAdmins(session.token),
+    queryFn: () => adminListAdmins(),
   });
   const [busy, setBusy] = useState<string | null>(null);
 
   const act = async (id: string, status: "approved" | "denied" | "revoked") => {
     setBusy(id);
     try {
-      await adminSetAdminStatus(session.token, id, status);
+      await adminSetAdminStatus(id, status);
       await refetch();
     } finally {
       setBusy(null);
@@ -531,7 +531,7 @@ function AdminsTab({ session }: { session: AdminSession }) {
   );
 }
 
-function CategoriesTab({ token }: { token: string }) {
+function CategoriesTab() {
   const qc = useQueryClient();
   const { data } = useQuery(categoriesQuery);
   const [rows, setRows] = useState<Category[]>([]);
@@ -662,7 +662,7 @@ function CategoriesTab({ token }: { token: string }) {
   );
 }
 
-function CitizensTab({ token }: { token: string }) {
+function CitizensTab() {
   const { data } = useQuery({
     queryKey: ["admin-taps"],
     queryFn: () => adminListTaps(),
@@ -706,7 +706,7 @@ function CitizensTab({ token }: { token: string }) {
   );
 }
 
-function NoticesTab({ token }: { token: string }) {
+function NoticesTab() {
   const qc = useQueryClient();
   const { data } = useQuery(notificationsQuery);
   const [rows, setRows] = useState<NotificationRow[]>([]);
@@ -804,7 +804,7 @@ function NoticesTab({ token }: { token: string }) {
   );
 }
 
-function GalleryTab({ token }: { token: string }) {
+function GalleryTab() {
   const qc = useQueryClient();
   const { data } = useQuery(galleryQuery);
   const [rows, setRows] = useState<GalleryRow[]>([]);
