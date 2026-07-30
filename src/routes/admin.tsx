@@ -77,65 +77,62 @@ function Field({
   );
 }
 
+type Approved = Extract<AdminMe, { role: string }>;
+
 function AdminPage() {
-  const [session, setSession] = useState<AdminSession | null>(null);
+  const [session, setSession] = useState<Approved | null>(null);
   const [checked, setChecked] = useState(false);
+  const [recovery, setRecovery] = useState(false);
 
   useEffect(() => {
-    const s = loadSession();
-    if (!s) {
-      setChecked(true);
-      return;
-    }
-    adminSessionInfo(s.token)
-      .then((info) => {
-        if (info.status === "ok") setSession(s);
-        else clearSession();
-      })
-      .catch(() => clearSession())
-      .finally(() => setChecked(true));
+    const hash = typeof window === "undefined" ? "" : window.location.hash;
+    if (hash.includes("type=recovery")) setRecovery(true);
+
+    const load = () =>
+      adminMe()
+        .then((me) => {
+          setSession(me.status === "approved" ? (me as Approved) : null);
+        })
+        .catch(() => setSession(null))
+        .finally(() => setChecked(true));
+
+    void load();
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setRecovery(true);
+      void load();
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
 
   if (!checked) return <div className="min-h-screen bg-background" />;
+  if (recovery) return <NewPasswordScreen onDone={() => setRecovery(false)} />;
   if (!session) return <AdminLogin onSuccess={setSession} />;
   return (
     <AdminDashboard
       session={session}
-      onLogout={() => {
-        clearSession();
+      onLogout={async () => {
+        await adminSignOut();
         setSession(null);
       }}
     />
   );
 }
 
-function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
-  const [phone, setPhone] = useState("");
-  const [pin, setPin] = useState("");
+function NewPasswordScreen({ onDone }: { onDone: () => void }) {
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 8) return setMessage("Use at least 8 characters.");
     setBusy(true);
-    setMessage(null);
     try {
-      const res = await adminLogin(phone, pin);
-      if (res.status === "ok") {
-        const s = { token: res.token, role: res.role, mobile: res.mobile };
-        saveSession(s);
-        onSuccess(s);
-        return;
-      }
-      setMessage(
-        res.status === "pending"
-          ? "Access request sent. The main admin must approve your number."
-          : res.status === "denied" || res.status === "revoked"
-            ? "Your access request was not approved."
-            : "Invalid phone number or PIN.",
-      );
-    } catch {
-      setMessage("Could not sign in. Please try again.");
+      await adminSetPassword(password);
+      if (typeof window !== "undefined") window.location.hash = "";
+      onDone();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Could not update the password.");
     } finally {
       setBusy(false);
     }
@@ -145,18 +142,14 @@ function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
     <div className="min-h-screen bg-background">
       <div className="tricolor-bar h-1.5 w-full" />
       <form onSubmit={submit} className="mx-auto max-w-sm px-5 pt-16">
-        <h1 className="text-2xl font-extrabold">Admin panel</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Approved phone numbers only. New numbers are sent to the main admin for approval.
-        </p>
+        <h1 className="text-2xl font-extrabold">Set a new password</h1>
         <div className="card-soft mt-6 space-y-4 p-5">
-          <Field label="Phone number" value={phone} onChange={setPhone} />
           <label className="block">
-            <span className="text-xs font-semibold text-muted-foreground">Admin PIN</span>
+            <span className="text-xs font-semibold text-muted-foreground">New password</span>
             <input
               type="password"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </label>
@@ -165,8 +158,141 @@ function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
             disabled={busy}
             className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            Sign in
+            Save password
           </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+type Mode = "signin" | "signup" | "forgot";
+
+function AdminLogin({ onSuccess }: { onSuccess: (s: Approved) => void }) {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [tone, setTone] = useState<"error" | "info">("error");
+  const [busy, setBusy] = useState(false);
+
+  const say = (text: string, kind: "error" | "info" = "error") => {
+    setTone(kind);
+    setMessage(text);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMessage(null);
+    try {
+      if (mode === "forgot") {
+        await adminSendReset(email);
+        say("Password reset link sent. Check your inbox.", "info");
+      } else if (mode === "signup") {
+        if (password.length < 8) throw new Error("Use at least 8 characters.");
+        const { needsVerification } = await adminSignUp(email, password);
+        say(
+          needsVerification
+            ? "Account created. Verify your email from the link we sent, then sign in."
+            : "Account created. You can sign in now.",
+          "info",
+        );
+        setMode("signin");
+      } else {
+        const me = await adminSignIn(email, password);
+        if (me.status === "approved") {
+          onSuccess(me as Approved);
+          return;
+        }
+        await adminSignOut();
+        say(
+          me.status === "pending"
+            ? "Access request sent. The main admin must approve your email."
+            : "Your access request was not approved.",
+        );
+      }
+    } catch (err) {
+      say(err instanceof Error ? err.message : "Could not sign in. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="tricolor-bar h-1.5 w-full" />
+      <form onSubmit={submit} className="mx-auto max-w-sm px-5 pt-16">
+        <h1 className="text-2xl font-extrabold">
+          {mode === "signup"
+            ? "Create admin account"
+            : mode === "forgot"
+              ? "Reset password"
+              : "Admin panel"}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {mode === "forgot"
+            ? "We will email you a password reset link."
+            : "Sign in with your admin email. New emails need approval from the main admin."}
+        </p>
+        <div className="card-soft mt-6 space-y-4 p-5">
+          <label className="block">
+            <span className="text-xs font-semibold text-muted-foreground">Email</span>
+            <input
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          {mode !== "forgot" ? (
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Password</span>
+              <input
+                type="password"
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </label>
+          ) : null}
+          {message ? (
+            <p
+              className={`text-sm font-medium ${tone === "info" ? "text-secondary" : "text-destructive"}`}
+            >
+              {message}
+            </p>
+          ) : null}
+          <button
+            disabled={busy}
+            className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {mode === "signup" ? "Create account" : mode === "forgot" ? "Send reset link" : "Sign in"}
+          </button>
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => {
+                setMessage(null);
+                setMode(mode === "signup" ? "signin" : "signup");
+              }}
+              className="text-primary"
+            >
+              {mode === "signup" ? "I already have an account" : "First time? Create account"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMessage(null);
+                setMode(mode === "forgot" ? "signin" : "forgot");
+              }}
+              className="text-muted-foreground"
+            >
+              {mode === "forgot" ? "Back to sign in" : "Forgot password"}
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -184,6 +310,7 @@ const TABS = [
   "Gallery",
   "Admins",
 ] as const;
+
 
 function AdminDashboard({
   session,
