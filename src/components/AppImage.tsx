@@ -13,6 +13,29 @@ type Props = {
   fallback?: "icon" | "none";
 };
 
+/** Deployed site used by the packaged Android / iOS app for database-hosted images. */
+const SITE_URL = (
+  import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.lovable.app"
+).replace(/\/$/, "");
+
+function isNative() {
+  if (typeof window === "undefined") return false;
+  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+  return Boolean(cap?.isNativePlatform?.());
+}
+
+/**
+ * Uploaded images are served by the app's own `/api/public/img/:id` route, which
+ * does not exist inside the packaged native bundle — there we point at the
+ * deployed site instead. Bundled files under /photos stay relative everywhere.
+ */
+export function resolveImageUrl(src?: string | null) {
+  if (!src) return src ?? undefined;
+  if (/^(https?:|data:|blob:)/i.test(src)) return src;
+  if (src.startsWith("/api/") && isNative()) return `${SITE_URL}${src}`;
+  return src;
+}
+
 /**
  * Every image in the app goes through this so nothing ever stretches, letterboxes
  * or shows a broken-image icon: the frame owns the shape, the photo is cropped
@@ -20,7 +43,8 @@ type Props = {
  */
 export function AppImage({ src, alt, className, position = "center", fallback = "icon" }: Props) {
   const [failed, setFailed] = useState(false);
-  const ok = Boolean(src) && !failed;
+  const url = resolveImageUrl(src);
+  const ok = Boolean(url) && !failed;
 
   if (!ok && fallback === "none") return null;
 
@@ -28,7 +52,7 @@ export function AppImage({ src, alt, className, position = "center", fallback = 
     <div className={cn("relative overflow-hidden bg-muted", className)}>
       {ok ? (
         <img
-          src={src as string}
+          src={url as string}
           alt={alt}
           loading="lazy"
           onError={() => setFailed(true)}
