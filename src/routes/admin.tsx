@@ -228,7 +228,6 @@ function AdminDashboard({
         {tab === "Admins" ? <AdminsTab session={session} /> : null}
         {tab === "Updates" ? (
           <CrudTab<UpdateRow>
-            token={token}
             table="updates"
             queryKey="updates"
             options={updatesQuery}
@@ -265,7 +264,6 @@ function AdminDashboard({
         ) : null}
         {tab === "Works" ? (
           <CrudTab<WorkRow>
-            token={token}
             table="works"
             queryKey="works"
             options={worksQuery}
@@ -299,7 +297,6 @@ function AdminDashboard({
         ) : null}
         {tab === "Schemes" ? (
           <CrudTab<SchemeRow>
-            token={token}
             table="schemes"
             queryKey="schemes"
             options={schemesQuery}
@@ -417,7 +414,6 @@ function SettingsTab({ token }: { token: string }) {
           <ImageField
             key={key}
             label={label}
-            token={token}
             value={form[key] ?? ""}
             onChange={set(key)}
           />
@@ -868,7 +864,6 @@ function GalleryTab({ token }: { token: string }) {
           <div className="grid gap-3 sm:grid-cols-2">
             <ImageField
               label="Photo"
-              token={token}
               value={row.image_url}
               onChange={(v) => update(i, { image_url: v })}
             />

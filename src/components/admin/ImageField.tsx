@@ -8,12 +8,10 @@ export function ImageField({
   label,
   value,
   onChange,
-  token,
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
-  token: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);

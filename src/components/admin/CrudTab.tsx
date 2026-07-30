@@ -13,7 +13,6 @@ export type FieldSpec<T> = {
 type Row = { id: string } & Record<string, unknown>;
 
 export function CrudTab<T extends Row>({
-  token,
   table,
   queryKey,
   options,
@@ -22,7 +21,6 @@ export function CrudTab<T extends Row>({
   addLabel,
   titleOf,
 }: {
-  token: string;
   table: AdminTableName;
   queryKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -93,7 +91,6 @@ export function CrudTab<T extends Row>({
                   <ImageField
                     key={f.key}
                     label={f.label}
-                    token={token}
                     value={String(value ?? "")}
                     onChange={(url) => update(i, { [f.key]: url } as Partial<T>)}
                   />
