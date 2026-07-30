@@ -4,7 +4,7 @@ import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle } 
 import { AppLayout } from "@/components/AppLayout";
 import { clearProfile, getProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
-import { lookupAdminRole } from "@/lib/citizen";
+import { adminMe } from "@/lib/admin";
 import { AppImage } from "@/components/AppImage";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -28,11 +28,12 @@ function ProfilePage() {
   const { data: config } = useQuery(configQuery);
   const { data: gallery } = useQuery(galleryQuery);
 
-  const { data: roleData } = useQuery({
-    queryKey: ["my-role"],
-    queryFn: () => lookupAdminRole(getProfile()?.mobile ?? ""),
+  const { data: me } = useQuery({
+    queryKey: ["admin-me"],
+    queryFn: () => adminMe(),
+    retry: false,
   });
-  const isAdmin = roleData === "admin" || roleData === "super_admin";
+  const isAdmin = me?.status === "approved";
 
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
   const videos = (gallery ?? []).filter((g) => g.media_type === "video");

@@ -14,6 +14,8 @@ export type AppConfig = {
   party_name_mr: string;
   party_name_en: string;
   photo_url: string;
+  splash_photo_url: string;
+  header_photo_url: string;
   party_logo_url: string;
   app_name: string;
   app_icon_url: string;
