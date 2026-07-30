@@ -52,7 +52,6 @@ export function CrudTab<T extends Row>({
     setStatus(null);
     try {
       await adminSaveRow(
-        token,
         table,
         (id.startsWith("new-") ? rest : { id, ...rest }) as Record<string, unknown>,
       );
