@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
-import { clearProfile, getProfile } from "@/lib/device";
+import { clearProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
 import { adminMe } from "@/lib/admin";
 import { AppImage } from "@/components/AppImage";
