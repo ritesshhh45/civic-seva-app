@@ -525,14 +525,15 @@ function SettingsTab() {
     ["phone", "Phone number"],
     ["whatsapp", "WhatsApp number"],
     ["accent_color", "Accent colour (hex)"],
-    ["admin_phone", "Main admin phone number"],
     ["office_address_mr", "Office address (Marathi)"],
     ["office_address_en", "Office address (English)"],
     ["office_map_url", "Office map link"],
   ];
 
   const images: [string, string][] = [
-    ["photo_url", "Representative photo"],
+    ["splash_photo_url", "Splash screen photo (full screen)"],
+    ["header_photo_url", "Home header photo"],
+    ["photo_url", "Representative photo (fallback)"],
     ["party_logo_url", "Party logo"],
     ["app_icon_url", "App icon (store listing)"],
   ];
