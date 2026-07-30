@@ -316,11 +316,11 @@ function AdminDashboard({
   session,
   onLogout,
 }: {
-  session: AdminSession;
+  session: Approved;
   onLogout: () => void;
 }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
-  const token = session.token;
+
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -329,7 +329,7 @@ function AdminDashboard({
         <div>
           <h1 className="text-xl font-extrabold">Admin panel</h1>
           <p className="text-xs text-muted-foreground">
-            {session.mobile} · {session.role.replace("_", " ")}
+            {session.email} · {session.role.replace("_", " ")}
           </p>
         </div>
         <button onClick={onLogout} className="text-sm font-semibold text-destructive">
@@ -565,7 +565,7 @@ function SettingsTab() {
   );
 }
 
-function AdminsTab({ session }: { session: AdminSession }) {
+function AdminsTab({ session }: { session: Approved }) {
   const { data, refetch } = useQuery({
     queryKey: ["admin-admins"],
     queryFn: () => adminListAdmins(),
@@ -585,7 +585,7 @@ function AdminsTab({ session }: { session: AdminSession }) {
   const rows = data ?? [];
   const pending = rows.filter((r) => r.status === "pending");
   const others = rows.filter((r) => r.status !== "pending");
-  const canManage = session.role === "super_admin";
+  const canManage = session.role === "primary_admin";
 
   return (
     <div className="space-y-6">
@@ -599,9 +599,9 @@ function AdminsTab({ session }: { session: AdminSession }) {
           pending.map((r) => (
             <div key={r.id} className="card-soft flex items-center gap-3 p-4">
               <div className="min-w-0 flex-1">
-                <p className="font-bold">{r.name || r.mobile}</p>
+                <p className="font-bold">{r.name || r.email}</p>
                 <p className="text-xs text-muted-foreground">
-                  {r.mobile} · requested {new Date(r.requested_at).toLocaleString("en-IN")}
+                  {r.email} · requested {new Date(r.created_at).toLocaleString("en-IN")}
                 </p>
               </div>
               {canManage ? (
@@ -634,12 +634,12 @@ function AdminsTab({ session }: { session: AdminSession }) {
         {others.map((r) => (
           <div key={r.id} className="card-soft flex items-center gap-3 p-4">
             <div className="min-w-0 flex-1">
-              <p className="font-bold">{r.name || r.mobile}</p>
+              <p className="font-bold">{r.name || r.email}</p>
               <p className="text-xs text-muted-foreground">
-                {r.mobile} · {r.role.replace("_", " ")} · {r.status}
+                {r.email} · {r.role.replace("_", " ")} · {r.status}
               </p>
             </div>
-            {canManage && r.role !== "super_admin" ? (
+            {canManage && r.role !== "primary_admin" ? (
               <button
                 disabled={busy === r.id}
                 onClick={() => act(r.id, r.status === "approved" ? "revoked" : "approved")}
