@@ -65,7 +65,7 @@ export function CrudTab<T extends Row>({
 
   const del = async (row: T) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, table, row.id);
+    await adminDeleteRow(table, row.id);
     await qc.invalidateQueries({ queryKey: [queryKey] });
   };
 

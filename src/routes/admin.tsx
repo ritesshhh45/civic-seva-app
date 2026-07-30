@@ -375,7 +375,7 @@ function SettingsTab({ token }: { token: string }) {
   const submit = async () => {
     setStatus(null);
     try {
-      await adminUpdateConfig(token, form);
+      await adminUpdateConfig(form);
       await qc.invalidateQueries({ queryKey: ["app_config"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -550,7 +550,7 @@ function CategoriesTab({ token }: { token: string }) {
     const { id, ...rest } = row;
     setStatus(null);
     try {
-      await adminSaveRow(token, "categories", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("categories", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["categories"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -563,7 +563,7 @@ function CategoriesTab({ token }: { token: string }) {
       setRows((r) => r.filter((x) => x.id !== row.id));
       return;
     }
-    await adminDeleteRow(token, "categories", row.id);
+    await adminDeleteRow("categories", row.id);
     await qc.invalidateQueries({ queryKey: ["categories"] });
   };
 
@@ -669,7 +669,7 @@ function CategoriesTab({ token }: { token: string }) {
 function CitizensTab({ token }: { token: string }) {
   const { data } = useQuery({
     queryKey: ["admin-taps"],
-    queryFn: () => adminListTaps(token),
+    queryFn: () => adminListTaps(),
   });
 
   if (!data || data.length === 0)
@@ -726,7 +726,7 @@ function NoticesTab({ token }: { token: string }) {
     void created_at;
     setStatus(null);
     try {
-      await adminSaveRow(token, "notifications", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("notifications", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["notifications"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -736,7 +736,7 @@ function NoticesTab({ token }: { token: string }) {
 
   const del = async (row: NotificationRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, "notifications", row.id);
+    await adminDeleteRow("notifications", row.id);
     await qc.invalidateQueries({ queryKey: ["notifications"] });
   };
 
@@ -823,7 +823,7 @@ function GalleryTab({ token }: { token: string }) {
     const { id, ...rest } = row;
     setStatus(null);
     try {
-      await adminSaveRow(token, "gallery", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("gallery", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["gallery"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -833,7 +833,7 @@ function GalleryTab({ token }: { token: string }) {
 
   const del = async (row: GalleryRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, "gallery", row.id);
+    await adminDeleteRow("gallery", row.id);
     await qc.invalidateQueries({ queryKey: ["gallery"] });
   };
 

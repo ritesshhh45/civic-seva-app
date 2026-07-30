@@ -24,7 +24,7 @@ export function ImageField({
     setBusy(true);
     setError(null);
     try {
-      onChange(await adminUploadImage(token, file));
+      onChange(await adminUploadImage(file));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
