@@ -76,7 +76,7 @@ function HomePage() {
           <section className="glass-card animate-rise overflow-hidden">
             <div className="flex items-center gap-4 p-5">
               <AppImage
-                src={config?.photo_url}
+                src={config?.header_photo_url || config?.photo_url}
                 alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
                 position="top"
                 fallback="none"

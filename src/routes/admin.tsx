@@ -6,16 +6,19 @@ import {
   adminDeleteRow,
   adminListAdmins,
   adminListTaps,
-  adminLogin,
+  adminMe,
   adminSaveRow,
-  adminSessionInfo,
+  adminSendReset,
   adminSetAdminStatus,
+  adminSetPassword,
+  adminSignIn,
+  adminSignOut,
+  adminSignUp,
   adminUpdateConfig,
-  clearSession,
-  loadSession,
-  saveSession,
-  type AdminSession,
+  type AdminMe,
 } from "@/lib/admin";
+import { supabase } from "@/integrations/supabase/client";
+
 import {
   categoriesQuery,
   configQuery,
@@ -74,65 +77,62 @@ function Field({
   );
 }
 
+type Approved = Extract<AdminMe, { role: string }>;
+
 function AdminPage() {
-  const [session, setSession] = useState<AdminSession | null>(null);
+  const [session, setSession] = useState<Approved | null>(null);
   const [checked, setChecked] = useState(false);
+  const [recovery, setRecovery] = useState(false);
 
   useEffect(() => {
-    const s = loadSession();
-    if (!s) {
-      setChecked(true);
-      return;
-    }
-    adminSessionInfo(s.token)
-      .then((info) => {
-        if (info.status === "ok") setSession(s);
-        else clearSession();
-      })
-      .catch(() => clearSession())
-      .finally(() => setChecked(true));
+    const hash = typeof window === "undefined" ? "" : window.location.hash;
+    if (hash.includes("type=recovery")) setRecovery(true);
+
+    const load = () =>
+      adminMe()
+        .then((me) => {
+          setSession(me.status === "approved" ? (me as Approved) : null);
+        })
+        .catch(() => setSession(null))
+        .finally(() => setChecked(true));
+
+    void load();
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setRecovery(true);
+      void load();
+    });
+    return () => data.subscription.unsubscribe();
   }, []);
 
   if (!checked) return <div className="min-h-screen bg-background" />;
+  if (recovery) return <NewPasswordScreen onDone={() => setRecovery(false)} />;
   if (!session) return <AdminLogin onSuccess={setSession} />;
   return (
     <AdminDashboard
       session={session}
-      onLogout={() => {
-        clearSession();
+      onLogout={async () => {
+        await adminSignOut();
         setSession(null);
       }}
     />
   );
 }
 
-function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
-  const [phone, setPhone] = useState("");
-  const [pin, setPin] = useState("");
+function NewPasswordScreen({ onDone }: { onDone: () => void }) {
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 8) return setMessage("Use at least 8 characters.");
     setBusy(true);
-    setMessage(null);
     try {
-      const res = await adminLogin(phone, pin);
-      if (res.status === "ok") {
-        const s = { token: res.token, role: res.role, mobile: res.mobile };
-        saveSession(s);
-        onSuccess(s);
-        return;
-      }
-      setMessage(
-        res.status === "pending"
-          ? "Access request sent. The main admin must approve your number."
-          : res.status === "denied" || res.status === "revoked"
-            ? "Your access request was not approved."
-            : "Invalid phone number or PIN.",
-      );
-    } catch {
-      setMessage("Could not sign in. Please try again.");
+      await adminSetPassword(password);
+      if (typeof window !== "undefined") window.location.hash = "";
+      onDone();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Could not update the password.");
     } finally {
       setBusy(false);
     }
@@ -142,18 +142,14 @@ function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
     <div className="min-h-screen bg-background">
       <div className="tricolor-bar h-1.5 w-full" />
       <form onSubmit={submit} className="mx-auto max-w-sm px-5 pt-16">
-        <h1 className="text-2xl font-extrabold">Admin panel</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Approved phone numbers only. New numbers are sent to the main admin for approval.
-        </p>
+        <h1 className="text-2xl font-extrabold">Set a new password</h1>
         <div className="card-soft mt-6 space-y-4 p-5">
-          <Field label="Phone number" value={phone} onChange={setPhone} />
           <label className="block">
-            <span className="text-xs font-semibold text-muted-foreground">Admin PIN</span>
+            <span className="text-xs font-semibold text-muted-foreground">New password</span>
             <input
               type="password"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
             />
           </label>
@@ -162,8 +158,141 @@ function AdminLogin({ onSuccess }: { onSuccess: (s: AdminSession) => void }) {
             disabled={busy}
             className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            Sign in
+            Save password
           </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+type Mode = "signin" | "signup" | "forgot";
+
+function AdminLogin({ onSuccess }: { onSuccess: (s: Approved) => void }) {
+  const [mode, setMode] = useState<Mode>("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [tone, setTone] = useState<"error" | "info">("error");
+  const [busy, setBusy] = useState(false);
+
+  const say = (text: string, kind: "error" | "info" = "error") => {
+    setTone(kind);
+    setMessage(text);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMessage(null);
+    try {
+      if (mode === "forgot") {
+        await adminSendReset(email);
+        say("Password reset link sent. Check your inbox.", "info");
+      } else if (mode === "signup") {
+        if (password.length < 8) throw new Error("Use at least 8 characters.");
+        const { needsVerification } = await adminSignUp(email, password);
+        say(
+          needsVerification
+            ? "Account created. Verify your email from the link we sent, then sign in."
+            : "Account created. You can sign in now.",
+          "info",
+        );
+        setMode("signin");
+      } else {
+        const me = await adminSignIn(email, password);
+        if (me.status === "approved") {
+          onSuccess(me as Approved);
+          return;
+        }
+        await adminSignOut();
+        say(
+          me.status === "pending"
+            ? "Access request sent. The main admin must approve your email."
+            : "Your access request was not approved.",
+        );
+      }
+    } catch (err) {
+      say(err instanceof Error ? err.message : "Could not sign in. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="tricolor-bar h-1.5 w-full" />
+      <form onSubmit={submit} className="mx-auto max-w-sm px-5 pt-16">
+        <h1 className="text-2xl font-extrabold">
+          {mode === "signup"
+            ? "Create admin account"
+            : mode === "forgot"
+              ? "Reset password"
+              : "Admin panel"}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {mode === "forgot"
+            ? "We will email you a password reset link."
+            : "Sign in with your admin email. New emails need approval from the main admin."}
+        </p>
+        <div className="card-soft mt-6 space-y-4 p-5">
+          <label className="block">
+            <span className="text-xs font-semibold text-muted-foreground">Email</span>
+            <input
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+          </label>
+          {mode !== "forgot" ? (
+            <label className="block">
+              <span className="text-xs font-semibold text-muted-foreground">Password</span>
+              <input
+                type="password"
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary"
+              />
+            </label>
+          ) : null}
+          {message ? (
+            <p
+              className={`text-sm font-medium ${tone === "info" ? "text-secondary" : "text-destructive"}`}
+            >
+              {message}
+            </p>
+          ) : null}
+          <button
+            disabled={busy}
+            className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
+          >
+            {mode === "signup" ? "Create account" : mode === "forgot" ? "Send reset link" : "Sign in"}
+          </button>
+          <div className="flex items-center justify-between text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => {
+                setMessage(null);
+                setMode(mode === "signup" ? "signin" : "signup");
+              }}
+              className="text-primary"
+            >
+              {mode === "signup" ? "I already have an account" : "First time? Create account"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMessage(null);
+                setMode(mode === "forgot" ? "signin" : "forgot");
+              }}
+              className="text-muted-foreground"
+            >
+              {mode === "forgot" ? "Back to sign in" : "Forgot password"}
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -182,15 +311,16 @@ const TABS = [
   "Admins",
 ] as const;
 
+
 function AdminDashboard({
   session,
   onLogout,
 }: {
-  session: AdminSession;
+  session: Approved;
   onLogout: () => void;
 }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
-  const token = session.token;
+
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -199,7 +329,7 @@ function AdminDashboard({
         <div>
           <h1 className="text-xl font-extrabold">Admin panel</h1>
           <p className="text-xs text-muted-foreground">
-            {session.mobile} · {session.role.replace("_", " ")}
+            {session.email} · {session.role.replace("_", " ")}
           </p>
         </div>
         <button onClick={onLogout} className="text-sm font-semibold text-destructive">
@@ -220,15 +350,14 @@ function AdminDashboard({
         ))}
       </div>
       <main className="mx-auto max-w-3xl px-5">
-        {tab === "Settings" ? <SettingsTab token={token} /> : null}
-        {tab === "Categories" ? <CategoriesTab token={token} /> : null}
-        {tab === "Citizens" ? <CitizensTab token={token} /> : null}
-        {tab === "Notices" ? <NoticesTab token={token} /> : null}
-        {tab === "Gallery" ? <GalleryTab token={token} /> : null}
+        {tab === "Settings" ? <SettingsTab /> : null}
+        {tab === "Categories" ? <CategoriesTab /> : null}
+        {tab === "Citizens" ? <CitizensTab /> : null}
+        {tab === "Notices" ? <NoticesTab /> : null}
+        {tab === "Gallery" ? <GalleryTab /> : null}
         {tab === "Admins" ? <AdminsTab session={session} /> : null}
         {tab === "Updates" ? (
           <CrudTab<UpdateRow>
-            token={token}
             table="updates"
             queryKey="updates"
             options={updatesQuery}
@@ -265,7 +394,6 @@ function AdminDashboard({
         ) : null}
         {tab === "Works" ? (
           <CrudTab<WorkRow>
-            token={token}
             table="works"
             queryKey="works"
             options={worksQuery}
@@ -299,7 +427,6 @@ function AdminDashboard({
         ) : null}
         {tab === "Schemes" ? (
           <CrudTab<SchemeRow>
-            token={token}
             table="schemes"
             queryKey="schemes"
             options={schemesQuery}
@@ -356,7 +483,7 @@ function AdminDashboard({
   );
 }
 
-function SettingsTab({ token }: { token: string }) {
+function SettingsTab() {
   const qc = useQueryClient();
   const { data } = useQuery(configQuery);
   const [form, setForm] = useState<Record<string, string>>({});
@@ -375,7 +502,7 @@ function SettingsTab({ token }: { token: string }) {
   const submit = async () => {
     setStatus(null);
     try {
-      await adminUpdateConfig(token, form);
+      await adminUpdateConfig(form);
       await qc.invalidateQueries({ queryKey: ["app_config"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -398,14 +525,15 @@ function SettingsTab({ token }: { token: string }) {
     ["phone", "Phone number"],
     ["whatsapp", "WhatsApp number"],
     ["accent_color", "Accent colour (hex)"],
-    ["admin_phone", "Main admin phone number"],
     ["office_address_mr", "Office address (Marathi)"],
     ["office_address_en", "Office address (English)"],
     ["office_map_url", "Office map link"],
   ];
 
   const images: [string, string][] = [
-    ["photo_url", "Representative photo"],
+    ["splash_photo_url", "Splash screen photo (full screen)"],
+    ["header_photo_url", "Home header photo"],
+    ["photo_url", "Representative photo (fallback)"],
     ["party_logo_url", "Party logo"],
     ["app_icon_url", "App icon (store listing)"],
   ];
@@ -417,7 +545,6 @@ function SettingsTab({ token }: { token: string }) {
           <ImageField
             key={key}
             label={label}
-            token={token}
             value={form[key] ?? ""}
             onChange={set(key)}
           />
@@ -439,17 +566,17 @@ function SettingsTab({ token }: { token: string }) {
   );
 }
 
-function AdminsTab({ session }: { session: AdminSession }) {
+function AdminsTab({ session }: { session: Approved }) {
   const { data, refetch } = useQuery({
     queryKey: ["admin-admins"],
-    queryFn: () => adminListAdmins(session.token),
+    queryFn: () => adminListAdmins(),
   });
   const [busy, setBusy] = useState<string | null>(null);
 
   const act = async (id: string, status: "approved" | "denied" | "revoked") => {
     setBusy(id);
     try {
-      await adminSetAdminStatus(session.token, id, status);
+      await adminSetAdminStatus(id, status);
       await refetch();
     } finally {
       setBusy(null);
@@ -459,7 +586,7 @@ function AdminsTab({ session }: { session: AdminSession }) {
   const rows = data ?? [];
   const pending = rows.filter((r) => r.status === "pending");
   const others = rows.filter((r) => r.status !== "pending");
-  const canManage = session.role === "super_admin";
+  const canManage = session.role === "primary_admin";
 
   return (
     <div className="space-y-6">
@@ -473,9 +600,9 @@ function AdminsTab({ session }: { session: AdminSession }) {
           pending.map((r) => (
             <div key={r.id} className="card-soft flex items-center gap-3 p-4">
               <div className="min-w-0 flex-1">
-                <p className="font-bold">{r.name || r.mobile}</p>
+                <p className="font-bold">{r.name || r.email}</p>
                 <p className="text-xs text-muted-foreground">
-                  {r.mobile} · requested {new Date(r.requested_at).toLocaleString("en-IN")}
+                  {r.email} · requested {new Date(r.created_at).toLocaleString("en-IN")}
                 </p>
               </div>
               {canManage ? (
@@ -508,12 +635,12 @@ function AdminsTab({ session }: { session: AdminSession }) {
         {others.map((r) => (
           <div key={r.id} className="card-soft flex items-center gap-3 p-4">
             <div className="min-w-0 flex-1">
-              <p className="font-bold">{r.name || r.mobile}</p>
+              <p className="font-bold">{r.name || r.email}</p>
               <p className="text-xs text-muted-foreground">
-                {r.mobile} · {r.role.replace("_", " ")} · {r.status}
+                {r.email} · {r.role.replace("_", " ")} · {r.status}
               </p>
             </div>
-            {canManage && r.role !== "super_admin" ? (
+            {canManage && r.role !== "primary_admin" ? (
               <button
                 disabled={busy === r.id}
                 onClick={() => act(r.id, r.status === "approved" ? "revoked" : "approved")}
@@ -535,7 +662,7 @@ function AdminsTab({ session }: { session: AdminSession }) {
   );
 }
 
-function CategoriesTab({ token }: { token: string }) {
+function CategoriesTab() {
   const qc = useQueryClient();
   const { data } = useQuery(categoriesQuery);
   const [rows, setRows] = useState<Category[]>([]);
@@ -550,7 +677,7 @@ function CategoriesTab({ token }: { token: string }) {
     const { id, ...rest } = row;
     setStatus(null);
     try {
-      await adminSaveRow(token, "categories", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("categories", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["categories"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -563,7 +690,7 @@ function CategoriesTab({ token }: { token: string }) {
       setRows((r) => r.filter((x) => x.id !== row.id));
       return;
     }
-    await adminDeleteRow(token, "categories", row.id);
+    await adminDeleteRow("categories", row.id);
     await qc.invalidateQueries({ queryKey: ["categories"] });
   };
 
@@ -666,10 +793,10 @@ function CategoriesTab({ token }: { token: string }) {
   );
 }
 
-function CitizensTab({ token }: { token: string }) {
+function CitizensTab() {
   const { data } = useQuery({
     queryKey: ["admin-taps"],
-    queryFn: () => adminListTaps(token),
+    queryFn: () => adminListTaps(),
   });
 
   if (!data || data.length === 0)
@@ -710,7 +837,7 @@ function CitizensTab({ token }: { token: string }) {
   );
 }
 
-function NoticesTab({ token }: { token: string }) {
+function NoticesTab() {
   const qc = useQueryClient();
   const { data } = useQuery(notificationsQuery);
   const [rows, setRows] = useState<NotificationRow[]>([]);
@@ -726,7 +853,7 @@ function NoticesTab({ token }: { token: string }) {
     void created_at;
     setStatus(null);
     try {
-      await adminSaveRow(token, "notifications", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("notifications", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["notifications"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -736,7 +863,7 @@ function NoticesTab({ token }: { token: string }) {
 
   const del = async (row: NotificationRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, "notifications", row.id);
+    await adminDeleteRow("notifications", row.id);
     await qc.invalidateQueries({ queryKey: ["notifications"] });
   };
 
@@ -808,7 +935,7 @@ function NoticesTab({ token }: { token: string }) {
   );
 }
 
-function GalleryTab({ token }: { token: string }) {
+function GalleryTab() {
   const qc = useQueryClient();
   const { data } = useQuery(galleryQuery);
   const [rows, setRows] = useState<GalleryRow[]>([]);
@@ -823,7 +950,7 @@ function GalleryTab({ token }: { token: string }) {
     const { id, ...rest } = row;
     setStatus(null);
     try {
-      await adminSaveRow(token, "gallery", id.startsWith("new-") ? rest : { id, ...rest });
+      await adminSaveRow("gallery", id.startsWith("new-") ? rest : { id, ...rest });
       await qc.invalidateQueries({ queryKey: ["gallery"] });
       setStatus("Saved — live for everyone");
     } catch (err) {
@@ -833,7 +960,7 @@ function GalleryTab({ token }: { token: string }) {
 
   const del = async (row: GalleryRow) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, "gallery", row.id);
+    await adminDeleteRow("gallery", row.id);
     await qc.invalidateQueries({ queryKey: ["gallery"] });
   };
 
@@ -868,7 +995,6 @@ function GalleryTab({ token }: { token: string }) {
           <div className="grid gap-3 sm:grid-cols-2">
             <ImageField
               label="Photo"
-              token={token}
               value={row.image_url}
               onChange={(v) => update(i, { image_url: v })}
             />

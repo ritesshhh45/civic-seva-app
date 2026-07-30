@@ -8,12 +8,10 @@ export function ImageField({
   label,
   value,
   onChange,
-  token,
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
-  token: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -24,7 +22,7 @@ export function ImageField({
     setBusy(true);
     setError(null);
     try {
-      onChange(await adminUploadImage(token, file));
+      onChange(await adminUploadImage(file));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

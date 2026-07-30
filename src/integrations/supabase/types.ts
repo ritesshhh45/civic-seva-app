@@ -14,75 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_auth: {
+      admin_accounts: {
         Row: {
-          id: boolean
-          pin_hash: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          role: string
+          status: string
           updated_at: string
         }
         Insert: {
-          id?: boolean
-          pin_hash: string
+          created_at?: string
+          email: string
+          id?: string
+          name?: string
+          role?: string
+          status?: string
           updated_at?: string
         }
         Update: {
-          id?: boolean
-          pin_hash?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          role?: string
+          status?: string
           updated_at?: string
-        }
-        Relationships: []
-      }
-      admin_sessions: {
-        Row: {
-          created_at: string
-          expires_at: string
-          mobile: string
-          token: string
-        }
-        Insert: {
-          created_at?: string
-          expires_at?: string
-          mobile: string
-          token?: string
-        }
-        Update: {
-          created_at?: string
-          expires_at?: string
-          mobile?: string
-          token?: string
-        }
-        Relationships: []
-      }
-      admin_users: {
-        Row: {
-          created_at: string
-          decided_at: string | null
-          id: string
-          mobile: string
-          name: string
-          requested_at: string
-          role: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          decided_at?: string | null
-          id?: string
-          mobile: string
-          name?: string
-          requested_at?: string
-          role?: string
-          status?: string
-        }
-        Update: {
-          created_at?: string
-          decided_at?: string | null
-          id?: string
-          mobile?: string
-          name?: string
-          requested_at?: string
-          role?: string
-          status?: string
         }
         Relationships: []
       }
@@ -92,6 +50,7 @@ export type Database = {
           admin_phone: string
           app_icon_url: string
           app_name: string
+          header_photo_url: string | null
           id: string
           office_address_en: string
           office_address_mr: string
@@ -105,6 +64,7 @@ export type Database = {
           rep_name_mr: string
           slogan_en: string
           slogan_mr: string
+          splash_photo_url: string | null
           tagline_en: string
           tagline_mr: string
           updated_at: string
@@ -117,6 +77,7 @@ export type Database = {
           admin_phone?: string
           app_icon_url?: string
           app_name?: string
+          header_photo_url?: string | null
           id?: string
           office_address_en?: string
           office_address_mr?: string
@@ -130,6 +91,7 @@ export type Database = {
           rep_name_mr?: string
           slogan_en?: string
           slogan_mr?: string
+          splash_photo_url?: string | null
           tagline_en?: string
           tagline_mr?: string
           updated_at?: string
@@ -142,6 +104,7 @@ export type Database = {
           admin_phone?: string
           app_icon_url?: string
           app_name?: string
+          header_photo_url?: string | null
           id?: string
           office_address_en?: string
           office_address_mr?: string
@@ -155,6 +118,7 @@ export type Database = {
           rep_name_mr?: string
           slogan_en?: string
           slogan_mr?: string
+          splash_photo_url?: string | null
           tagline_en?: string
           tagline_mr?: string
           updated_at?: string
@@ -531,27 +495,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      admin_delete_image: {
-        Args: { _id: string; _token: string }
-        Returns: Json
-      }
-      admin_delete_row: {
-        Args: { _id: string; _table: string; _token: string }
-        Returns: Json
-      }
+      admin_delete_image: { Args: { _id: string }; Returns: Json }
+      admin_delete_row: { Args: { _id: string; _table: string }; Returns: Json }
+      admin_email: { Args: never; Returns: string }
       admin_list_admins: {
-        Args: { _token: string }
+        Args: never
         Returns: {
+          created_at: string
+          email: string
           id: string
-          mobile: string
           name: string
-          requested_at: string
           role: string
           status: string
+          updated_at: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "admin_accounts"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       admin_list_images: {
-        Args: { _token: string }
+        Args: never
         Returns: {
           content_type: string
           created_at: string
@@ -560,37 +526,32 @@ export type Database = {
         }[]
       }
       admin_list_taps: {
-        Args: { _token: string }
+        Args: never
         Returns: {
+          category_id: string | null
           category_name: string
           created_at: string
+          device_id: string
           id: string
           mobile: string
           user_name: string
         }[]
-      }
-      admin_login: { Args: { _mobile: string; _pin: string }; Returns: Json }
-      admin_role_for_token: { Args: { _token: string }; Returns: string }
-      admin_save_row: {
-        Args: { _row: Json; _table: string; _token: string }
-        Returns: Json
-      }
-      admin_session_info: { Args: { _token: string }; Returns: Json }
-      admin_set_admin_status: {
-        Args: { _id: string; _name?: string; _status: string; _token: string }
-        Returns: Json
-      }
-      admin_update_config: {
-        Args: { _patch: Json; _token: string }
-        Returns: Json
-      }
-      admin_upload_image: {
-        Args: {
-          _content_type: string
-          _data: string
-          _filename: string
-          _token: string
+        SetofOptions: {
+          from: "*"
+          to: "complaint_taps"
+          isOneToOne: false
+          isSetofReturn: true
         }
+      }
+      admin_me: { Args: never; Returns: Json }
+      admin_save_row: { Args: { _row: Json; _table: string }; Returns: Json }
+      admin_set_admin_status: {
+        Args: { _id: string; _name?: string; _status: string }
+        Returns: Json
+      }
+      admin_update_config: { Args: { _patch: Json }; Returns: Json }
+      admin_upload_image: {
+        Args: { _content_type: string; _data: string; _filename: string }
         Returns: Json
       }
       citizen_history: {
@@ -615,7 +576,7 @@ export type Database = {
         Args: { _device_id: string; _mobile: string; _name: string }
         Returns: Json
       }
-      lookup_admin_role: { Args: { _mobile: string }; Returns: string }
+      current_admin_role: { Args: never; Returns: string }
       norm_mobile: { Args: { _v: string }; Returns: string }
     }
     Enums: {

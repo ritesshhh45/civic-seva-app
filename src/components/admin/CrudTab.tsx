@@ -13,7 +13,6 @@ export type FieldSpec<T> = {
 type Row = { id: string } & Record<string, unknown>;
 
 export function CrudTab<T extends Row>({
-  token,
   table,
   queryKey,
   options,
@@ -22,7 +21,6 @@ export function CrudTab<T extends Row>({
   addLabel,
   titleOf,
 }: {
-  token: string;
   table: AdminTableName;
   queryKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,7 +50,6 @@ export function CrudTab<T extends Row>({
     setStatus(null);
     try {
       await adminSaveRow(
-        token,
         table,
         (id.startsWith("new-") ? rest : { id, ...rest }) as Record<string, unknown>,
       );
@@ -65,7 +62,7 @@ export function CrudTab<T extends Row>({
 
   const del = async (row: T) => {
     if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow(token, table, row.id);
+    await adminDeleteRow(table, row.id);
     await qc.invalidateQueries({ queryKey: [queryKey] });
   };
 
@@ -94,7 +91,6 @@ export function CrudTab<T extends Row>({
                   <ImageField
                     key={f.key}
                     label={f.label}
-                    token={token}
                     value={String(value ?? "")}
                     onChange={(url) => update(i, { [f.key]: url } as Partial<T>)}
                   />

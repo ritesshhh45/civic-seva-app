@@ -29,7 +29,3 @@ export type HistoryRow = { id: string; category_name: string; created_at: string
 export function fetchMyHistory(deviceId: string) {
   return rpc<HistoryRow[]>("citizen_history", { _device_id: deviceId });
 }
-
-export function lookupAdminRole(mobile: string) {
-  return rpc<string | null>("lookup_admin_role", { _mobile: mobile });
-}

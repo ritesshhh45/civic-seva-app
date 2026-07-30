@@ -1,6 +1,6 @@
+import { supabase } from "@/integrations/supabase/client";
 import { rpc } from "./rpc";
 
-export type AdminSession = { token: string; role: string; mobile: string };
 export type AdminTableName =
   | "categories"
   | "notifications"
@@ -9,75 +9,90 @@ export type AdminTableName =
   | "works"
   | "schemes";
 
-const TOKEN_KEY = "seva_admin_session";
+export type AdminMe =
+  | { status: "anon" }
+  | { status: "pending" | "approved" | "denied" | "revoked"; role: string; email: string; name: string };
 
-export function loadSession(): AdminSession | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(TOKEN_KEY);
-    return raw ? (JSON.parse(raw) as AdminSession) : null;
-  } catch {
-    return null;
-  }
+/** Who the currently signed-in email is, from the database. */
+export function adminMe() {
+  return rpc<AdminMe>("admin_me");
 }
 
-export function saveSession(s: AdminSession) {
-  localStorage.setItem(TOKEN_KEY, JSON.stringify(s));
+function redirectTo() {
+  return typeof window === "undefined" ? undefined : `${window.location.origin}/admin`;
 }
 
-export function clearSession() {
-  localStorage.removeItem(TOKEN_KEY);
+export async function adminSignIn(email: string, password: string) {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  });
+  if (error) throw new Error(error.message);
+  return adminMe();
 }
 
-export type LoginResult =
-  | { status: "ok"; token: string; role: string; mobile: string }
-  | { status: "pending" | "denied" | "revoked" | "invalid" };
-
-export function adminLogin(mobile: string, pin: string) {
-  return rpc<LoginResult>("admin_login", { _mobile: mobile, _pin: pin });
+export async function adminSignUp(email: string, password: string) {
+  const { data, error } = await supabase.auth.signUp({
+    email: email.trim().toLowerCase(),
+    password,
+    options: { emailRedirectTo: redirectTo() },
+  });
+  if (error) throw new Error(error.message);
+  // When email confirmation is on there is no session yet.
+  return { needsVerification: !data.session };
 }
 
-export function adminSessionInfo(token: string) {
-  return rpc<{ status: string; role?: string }>("admin_session_info", { _token: token });
+export async function adminSendReset(email: string) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+    redirectTo: redirectTo(),
+  });
+  if (error) throw new Error(error.message);
 }
 
-export type AdminUserRow = {
+export async function adminSetPassword(password: string) {
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) throw new Error(error.message);
+}
+
+export async function adminSignOut() {
+  await supabase.auth.signOut();
+}
+
+export type AdminAccountRow = {
   id: string;
-  mobile: string;
+  email: string;
   name: string;
   role: string;
   status: string;
-  requested_at: string;
+  created_at: string;
 };
 
-export function adminListAdmins(token: string) {
-  return rpc<AdminUserRow[]>("admin_list_admins", { _token: token });
+export function adminListAdmins() {
+  return rpc<AdminAccountRow[]>("admin_list_admins");
 }
 
 export function adminSetAdminStatus(
-  token: string,
   id: string,
   status: "approved" | "denied" | "revoked",
   name?: string,
 ) {
   return rpc<{ ok: boolean }>("admin_set_admin_status", {
-    _token: token,
     _id: id,
     _status: status,
     _name: name ?? null,
   });
 }
 
-export function adminSaveRow(token: string, table: AdminTableName, row: Record<string, unknown>) {
-  return rpc<{ ok: boolean }>("admin_save_row", { _token: token, _table: table, _row: row });
+export function adminSaveRow(table: AdminTableName, row: Record<string, unknown>) {
+  return rpc<{ ok: boolean }>("admin_save_row", { _table: table, _row: row });
 }
 
-export function adminDeleteRow(token: string, table: AdminTableName, id: string) {
-  return rpc<{ ok: boolean }>("admin_delete_row", { _token: token, _table: table, _id: id });
+export function adminDeleteRow(table: AdminTableName, id: string) {
+  return rpc<{ ok: boolean }>("admin_delete_row", { _table: table, _id: id });
 }
 
-export function adminUpdateConfig(token: string, patch: Record<string, unknown>) {
-  return rpc<{ ok: boolean }>("admin_update_config", { _token: token, _patch: patch });
+export function adminUpdateConfig(patch: Record<string, unknown>) {
+  return rpc<{ ok: boolean }>("admin_update_config", { _patch: patch });
 }
 
 export type TapRow = {
@@ -88,26 +103,25 @@ export type TapRow = {
   created_at: string;
 };
 
-export function adminListTaps(token: string) {
-  return rpc<TapRow[]>("admin_list_taps", { _token: token });
+export function adminListTaps() {
+  return rpc<TapRow[]>("admin_list_taps");
 }
 
 export type ImageRow = { id: string; filename: string; content_type: string; created_at: string };
 
-export function adminListImages(token: string) {
-  return rpc<ImageRow[]>("admin_list_images", { _token: token });
+export function adminListImages() {
+  return rpc<ImageRow[]>("admin_list_images");
 }
 
-export function adminDeleteImage(token: string, id: string) {
-  return rpc<{ ok: boolean }>("admin_delete_image", { _token: token, _id: id });
+export function adminDeleteImage(id: string) {
+  return rpc<{ ok: boolean }>("admin_delete_image", { _id: id });
 }
 
 /** Reads a picked file, downscales it and stores it in the app image library. */
-export async function adminUploadImage(token: string, file: File): Promise<string> {
+export async function adminUploadImage(file: File): Promise<string> {
   const { dataUrl, contentType } = await prepareImage(file);
   const base64 = dataUrl.slice(dataUrl.indexOf(",") + 1);
   const res = await rpc<{ ok: boolean; id: string; url: string }>("admin_upload_image", {
-    _token: token,
     _filename: file.name,
     _content_type: contentType,
     _data: base64,
