@@ -50,40 +50,41 @@ function Entry() {
 
   if (showSplash || !needsLogin) {
     return (
-      <div className="cream-gradient relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
+      <div className="relative min-h-screen overflow-hidden bg-[oklch(0.18_0.02_60)]">
+        {/* Full-bleed portrait, cropped to fill any phone screen */}
+        <AppImage
+          src={config?.splash_photo_url || config?.photo_url}
+          alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
+          position="top"
+          fallback="none"
+          className="absolute inset-0 h-full w-full"
+        />
+
+        {/* Readability gradient only at the top and bottom text areas */}
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[oklch(0.2_0.03_60_/_0.8)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[oklch(0.18_0.03_60_/_0.94)] via-[oklch(0.2_0.03_60_/_0.6)] to-transparent" />
+
         <div className="tricolor-bar absolute inset-x-0 top-0 h-1.5" />
 
-        <div className="animate-rise flex w-full max-w-xs flex-col items-center">
+        <div className="absolute inset-x-0 top-0 flex justify-center pt-8">
           {config?.party_logo_url ? (
             <AppImage
               src={config.party_logo_url}
               alt={pick(lang, config.party_name_mr, config.party_name_en)}
               fallback="none"
-              className="mb-5 h-16 w-16 rounded-full bg-card p-1 shadow-soft ring-2 ring-primary/20"
+              className="h-16 w-16 rounded-full bg-card/90 p-1 shadow-soft ring-2 ring-primary/30"
             />
           ) : null}
+        </div>
 
-          {/* Clean portrait crop — the photo keeps its own frame, text never sits on busy background */}
-          <div className="relative w-full overflow-hidden rounded-[28px] shadow-soft ring-1 ring-primary/15">
-            <AppImage
-              src={config?.photo_url}
-              alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
-              position="top"
-              className="aspect-[4/5] w-full"
-            />
-            {/* gradient only under the text strip */}
-            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[oklch(0.26_0.05_55_/_0.92)] via-[oklch(0.26_0.05_55_/_0.55)] to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-4 text-center">
-              <span className="inline-block rounded-full bg-primary px-3.5 py-1 text-xs font-bold text-primary-foreground shadow-soft">
-                {config ? pick(lang, config.ward_mr, config.ward_en) : ""}
-              </span>
-              <h1 className="mt-2 text-2xl font-extrabold leading-tight text-white drop-shadow">
-                {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
-              </h1>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-sm font-semibold text-muted-foreground">
+        <div className="animate-rise absolute inset-x-0 bottom-0 px-6 pb-12 text-center">
+          <span className="inline-block rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-soft">
+            {config ? pick(lang, config.ward_mr, config.ward_en) : ""}
+          </span>
+          <h1 className="mt-3 text-3xl font-extrabold leading-tight text-white drop-shadow-lg">
+            {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
+          </h1>
+          <p className="mt-2 text-sm font-semibold text-white/85">
             {config ? pick(lang, config.slogan_mr, config.slogan_en) : ""}
           </p>
         </div>
@@ -92,6 +93,7 @@ function Entry() {
       </div>
     );
   }
+
 
 
   return <LoginScreen />;
