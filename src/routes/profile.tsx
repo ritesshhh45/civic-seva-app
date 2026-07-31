@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle } from "lucide-react";
+import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle, Images } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { clearProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
-import { adminMe } from "@/lib/admin";
 import { AppImage } from "@/components/AppImage";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -28,13 +27,6 @@ function ProfilePage() {
   const { data: config } = useQuery(configQuery);
   const { data: gallery } = useQuery(galleryQuery);
 
-  const { data: me } = useQuery({
-    queryKey: ["admin-me"],
-    queryFn: () => adminMe(),
-    retry: false,
-  });
-  const isAdmin = me?.status === "approved";
-
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
   const videos = (gallery ?? []).filter((g) => g.media_type === "video");
 
@@ -42,6 +34,15 @@ function ProfilePage() {
     <AppLayout title={t("profile")}>
       {(profile) => (
         <div className="space-y-5">
+          <div className="flex justify-end">
+            <Link
+              to="/admin"
+              className="press flex items-center gap-2 rounded-full border border-primary/30 bg-card px-4 py-2 text-sm font-bold text-primary shadow-soft"
+            >
+              <Shield className="h-4 w-4" /> {t("admin")}
+            </Link>
+          </div>
+
           <section className="glass-card p-5">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
               {t("savedInfo")}
@@ -80,6 +81,10 @@ function ProfilePage() {
 
           <Link to="/takrari" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
             <ListChecks className="h-5 w-5 text-primary" /> {t("myComplaints")}
+          </Link>
+
+          <Link to="/gallery" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
+            <Images className="h-5 w-5 text-primary" /> {t("gallery")}
           </Link>
 
           {photos.length > 0 ? (
@@ -126,12 +131,6 @@ function ProfilePage() {
                 ))}
               </div>
             </section>
-          ) : null}
-
-          {isAdmin ? (
-            <Link to="/admin" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
-              <Shield className="h-5 w-5 text-primary" /> {t("admin")}
-            </Link>
           ) : null}
 
           <button

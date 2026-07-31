@@ -36,6 +36,7 @@ import {
   type SchemeRow,
 } from "@/lib/queries";
 import { CrudTab } from "@/components/admin/CrudTab";
+import { GalleryManager } from "@/components/admin/GalleryManager";
 import { ImageField } from "@/components/admin/ImageField";
 import { AppImage } from "@/components/AppImage";
 import { ICON_NAMES, CategoryIcon } from "@/components/CategoryIcon";
@@ -936,116 +937,5 @@ function NoticesTab() {
 }
 
 function GalleryTab() {
-  const qc = useQueryClient();
-  const { data } = useQuery(galleryQuery);
-  const [rows, setRows] = useState<GalleryRow[]>([]);
-  const [status, setStatus] = useState<string | null>(null);
-
-  useEffect(() => setRows(data ?? []), [data]);
-
-  const update = (i: number, patch: Partial<GalleryRow>) =>
-    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, ...patch } : row)));
-
-  const persist = async (row: GalleryRow) => {
-    const { id, ...rest } = row;
-    setStatus(null);
-    try {
-      await adminSaveRow("gallery", id.startsWith("new-") ? rest : { id, ...rest });
-      await qc.invalidateQueries({ queryKey: ["gallery"] });
-      setStatus("Saved — live for everyone");
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : "Could not save");
-    }
-  };
-
-  const del = async (row: GalleryRow) => {
-    if (row.id.startsWith("new-")) return setRows((r) => r.filter((x) => x.id !== row.id));
-    await adminDeleteRow("gallery", row.id);
-    await qc.invalidateQueries({ queryKey: ["gallery"] });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() =>
-            setRows((r) => [
-              ...r,
-              {
-                id: `new-${crypto.randomUUID()}`,
-                title_mr: "",
-                title_en: "",
-                image_url: "",
-                sort_order: r.length + 1,
-                video_url: "",
-                media_type: "photo",
-              },
-            ])
-          }
-          className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
-        >
-          <Plus className="h-4 w-4" /> Add photo / video
-        </button>
-        {status ? <span className="text-sm text-muted-foreground">{status}</span> : null}
-      </div>
-
-      {rows.map((row, i) => (
-        <div key={row.id} className="card-soft space-y-3 p-4">
-          <AppImage src={row.image_url} alt={row.title_en} className="h-32 w-full rounded-xl" />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <ImageField
-              label="Photo"
-              value={row.image_url}
-              onChange={(v) => update(i, { image_url: v })}
-            />
-            <Field
-              label="Caption (Marathi)"
-              value={row.title_mr}
-              onChange={(v) => update(i, { title_mr: v })}
-            />
-            <Field
-              label="Caption (English)"
-              value={row.title_en}
-              onChange={(v) => update(i, { title_en: v })}
-            />
-            <label className="block">
-              <span className="text-xs font-semibold text-muted-foreground">Media type</span>
-              <select
-                value={row.media_type}
-                onChange={(e) => update(i, { media_type: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="photo">Photo</option>
-                <option value="video">Video</option>
-              </select>
-            </label>
-            <Field
-              label="Video link (YouTube)"
-              value={row.video_url}
-              onChange={(v) => update(i, { video_url: v })}
-            />
-            <Field
-              label="Order"
-              value={String(row.sort_order)}
-              onChange={(v) => update(i, { sort_order: Number(v.replace(/\D/g, "")) || 0 })}
-            />
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => persist(row)}
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
-            >
-              <Save className="h-4 w-4" /> Save
-            </button>
-            <button
-              onClick={() => del(row)}
-              className="flex items-center gap-2 rounded-lg border border-destructive/30 px-4 py-2 text-sm font-bold text-destructive"
-            >
-              <Trash2 className="h-4 w-4" /> Delete
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <GalleryManager />;
 }

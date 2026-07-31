@@ -110,6 +110,7 @@ export type GalleryRow = {
   video_url: string;
   media_type: string;
   sort_order: number;
+  created_at: string;
 };
 
 export const configQuery = queryOptions({
@@ -188,7 +189,8 @@ export const galleryQuery = queryOptions({
     const { data, error } = await supabase
       .from("gallery")
       .select("*")
-      .order("sort_order", { ascending: true });
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
     if (error) throw error;
     return (data ?? []) as unknown as GalleryRow[];
   },

@@ -30,8 +30,6 @@ export const Route = createFileRoute("/")({
 
 function Entry() {
   const navigate = useNavigate();
-  const { lang, t } = useLang();
-  const { data: config } = useQuery(configQuery);
   const [showSplash, setShowSplash] = useState(true);
   const [needsLogin, setNeedsLogin] = useState(false);
 
@@ -44,59 +42,126 @@ function Entry() {
         setShowSplash(false);
         setNeedsLogin(true);
       }
-    }, 3400);
+    }, 2500);
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  if (showSplash || !needsLogin) {
-    return (
-      <div className="relative min-h-screen overflow-hidden bg-[oklch(0.18_0.02_60)]">
-        {/* Full-bleed portrait, cropped to fill any phone screen */}
-        <AppImage
-          src={config?.splash_photo_url || config?.photo_url}
-          alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
-          position="top"
-          fallback="none"
-          className="absolute inset-0 h-full w-full"
-        />
-
-        {/* Readability gradient only at the top and bottom text areas */}
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[oklch(0.2_0.03_60_/_0.8)] to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[oklch(0.18_0.03_60_/_0.94)] via-[oklch(0.2_0.03_60_/_0.6)] to-transparent" />
-
-        <div className="tricolor-bar absolute inset-x-0 top-0 h-1.5" />
-
-        <div className="absolute inset-x-0 top-0 flex justify-center pt-8">
-          {config?.party_logo_url ? (
-            <AppImage
-              src={config.party_logo_url}
-              alt={pick(lang, config.party_name_mr, config.party_name_en)}
-              fallback="none"
-              className="h-16 w-16 rounded-full bg-card/90 p-1 shadow-soft ring-2 ring-primary/30"
-            />
-          ) : null}
-        </div>
-
-        <div className="animate-rise absolute inset-x-0 bottom-0 px-6 pb-12 text-center">
-          <span className="inline-block rounded-full bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-soft">
-            {config ? pick(lang, config.ward_mr, config.ward_en) : ""}
-          </span>
-          <h1 className="mt-3 text-3xl font-extrabold leading-tight text-white drop-shadow-lg">
-            {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
-          </h1>
-          <p className="mt-2 text-sm font-semibold text-white/85">
-            {config ? pick(lang, config.slogan_mr, config.slogan_en) : ""}
-          </p>
-        </div>
-
-        <div className="tricolor-bar absolute inset-x-0 bottom-0 h-2" />
-      </div>
-    );
-  }
-
-
+  if (showSplash || !needsLogin) return <SplashScreen />;
 
   return <LoginScreen />;
+}
+
+/** Slow-floating golden motes, seeded so every run looks the same. */
+const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
+  left: (i * 37) % 96,
+  size: 3 + ((i * 5) % 5),
+  delay: (i * 0.83) % 11,
+  duration: 9 + ((i * 3) % 7),
+}));
+
+function SplashScreen() {
+  const { lang } = useLang();
+  const { data: config } = useQuery(configQuery);
+
+  const name = config ? pick(lang, config.rep_name_mr, config.rep_name_en) : "Sanjay Chaudhary";
+  const ward = config ? pick(lang, config.ward_mr, config.ward_en) : "Ward No. 10";
+
+  return (
+    <div className="sunrise-bg relative flex min-h-screen flex-col items-center overflow-hidden">
+      {/* soft moving sun light */}
+      <div className="sun-glow pointer-events-none absolute -bottom-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full" />
+
+      {/* skyline silhouette */}
+      <svg
+        viewBox="0 0 400 120"
+        preserveAspectRatio="none"
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full opacity-25"
+      >
+        <path
+          fill="oklch(0.62 0.14 55)"
+          d="M0 120V78h18V58h14v20h16V44h10v34h20V62h18v16h12V34h12v44h18V56h16v22h14V46h12v32h22V66h16v12h14V40h12v38h18V60h16v18h14V50h12v28h22V70h16v8h12V120z"
+        />
+      </svg>
+
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          aria-hidden
+          className="gold-particle pointer-events-none absolute bottom-24"
+          style={{
+            left: `${p.left}%`,
+            width: p.size,
+            height: p.size,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+          }}
+        />
+      ))}
+
+      {/* top app logo */}
+      <div className="fade-up relative z-10 pt-10">
+        <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-white/85 shadow-[0_10px_30px_-14px_rgba(120,70,10,0.6)] ring-1 ring-white/70 backdrop-blur-md">
+          <AppImage
+            src={config?.app_icon_url || config?.party_logo_url}
+            alt=""
+            fallback="none"
+            className="h-12 w-12 rounded-full bg-transparent"
+          />
+        </div>
+      </div>
+
+      {/* portrait */}
+      <div className="relative z-10 mt-10 flex flex-1 flex-col items-center px-8">
+        <div className="animate-portrait gold-rim h-56 w-56 overflow-hidden rounded-full">
+          <AppImage
+            src={config?.splash_photo_url || config?.photo_url}
+            alt={name}
+            position="top"
+            className="h-full w-full bg-white/40"
+          />
+        </div>
+
+        <h1
+          className="fade-up mt-8 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[oklch(0.32_0.07_50)]"
+          style={{ animationDelay: "220ms" }}
+        >
+          {name}
+        </h1>
+        <p
+          className="fade-up mt-2 text-center text-[0.8rem] font-semibold uppercase tracking-[0.22em] text-[oklch(0.5_0.12_50)]"
+          style={{ animationDelay: "340ms" }}
+        >
+          Corporator • {ward}
+        </p>
+        <p
+          className="fade-up mt-5 text-center text-base font-bold tracking-wide text-[oklch(0.38_0.09_48)]"
+          style={{ animationDelay: "460ms" }}
+        >
+          जनसेवा • विकास • विश्वास
+        </p>
+        <p
+          className="fade-up mt-1.5 text-center text-sm text-[oklch(0.48_0.05_55)]"
+          style={{ animationDelay: "560ms" }}
+        >
+          आपल्या सेवेत सदैव तत्पर
+        </p>
+      </div>
+
+      {/* loading */}
+      <div className="fade-up relative z-10 w-full max-w-xs px-8 pb-10 text-center" style={{ animationDelay: "640ms" }}>
+        <div className="relative h-[3px] w-full overflow-hidden rounded-full bg-white/60">
+          <div className="tri-sweep tricolor-bar absolute inset-y-0 left-0 w-1/2 rounded-full" />
+        </div>
+        <p className="mt-4 text-xs font-semibold tracking-wide text-[oklch(0.5_0.06_55)]">
+          Preparing Citizen Services…
+        </p>
+        <p className="mt-6 text-[0.65rem] uppercase tracking-[0.18em] text-[oklch(0.6_0.04_60)]">
+          Powered by {ward} Digital Services
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function LoginScreen() {
