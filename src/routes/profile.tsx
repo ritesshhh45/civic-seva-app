@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle } from "lucide-react";
+import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle, Images } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { clearProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
-import { adminMe } from "@/lib/admin";
 import { AppImage } from "@/components/AppImage";
 import { pick, useLang } from "@/lib/i18n";
 
@@ -27,13 +26,6 @@ function ProfilePage() {
   const navigate = useNavigate();
   const { data: config } = useQuery(configQuery);
   const { data: gallery } = useQuery(galleryQuery);
-
-  const { data: me } = useQuery({
-    queryKey: ["admin-me"],
-    queryFn: () => adminMe(),
-    retry: false,
-  });
-  const isAdmin = me?.status === "approved";
 
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
   const videos = (gallery ?? []).filter((g) => g.media_type === "video");
@@ -91,6 +83,10 @@ function ProfilePage() {
             <ListChecks className="h-5 w-5 text-primary" /> {t("myComplaints")}
           </Link>
 
+          <Link to="/gallery" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
+            <Images className="h-5 w-5 text-primary" /> {t("gallery")}
+          </Link>
+
           {photos.length > 0 ? (
             <section>
               <h2 className="mb-3 text-base font-extrabold">{t("photos")}</h2>
@@ -135,12 +131,6 @@ function ProfilePage() {
                 ))}
               </div>
             </section>
-          ) : null}
-
-          {isAdmin ? (
-            <Link to="/admin" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
-              <Shield className="h-5 w-5 text-primary" /> {t("admin")}
-            </Link>
           ) : null}
 
           <button
