@@ -32,7 +32,8 @@ function isNative() {
 export function resolveImageUrl(src?: string | null) {
   if (!src) return src ?? undefined;
   if (/^(https?:|data:|blob:)/i.test(src)) return src;
-  if (src.startsWith("/api/") && isNative()) return `${SITE_URL}${src}`;
+  if ((src.startsWith("/api/") || src.startsWith("/__l5e/")) && isNative())
+    return `${SITE_URL}${src}`;
   return src;
 }
 
