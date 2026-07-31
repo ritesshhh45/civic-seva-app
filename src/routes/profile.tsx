@@ -42,6 +42,15 @@ function ProfilePage() {
     <AppLayout title={t("profile")}>
       {(profile) => (
         <div className="space-y-5">
+          <div className="flex justify-end">
+            <Link
+              to="/admin"
+              className="press flex items-center gap-2 rounded-full border border-primary/30 bg-card px-4 py-2 text-sm font-bold text-primary shadow-soft"
+            >
+              <Shield className="h-4 w-4" /> {t("admin")}
+            </Link>
+          </div>
+
           <section className="glass-card p-5">
             <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
               {t("savedInfo")}
