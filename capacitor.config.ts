@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   webDir: ".output/public",
   server: {
     androidScheme: "https",
-    url: "https://civic-seva-app.lovable.app",
+   url: "https://civic-seva-app.vercel.app",
     cleartext: false,
   },
   plugins: {
