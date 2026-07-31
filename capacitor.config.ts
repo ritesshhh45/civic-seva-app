@@ -8,7 +8,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 const config: CapacitorConfig = {
   appId: "in.wardseva.sanjaychaudhary",
   appName: "Sanjay Chaudhary",
-  webDir: "dist/client",
+  webDir: ".output/public",
   server: {
     androidScheme: "https",
     url: "https://civic-seva-app.lovable.app",
