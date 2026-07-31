@@ -16,6 +16,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UpdatesIndexRouteImport } from './routes/updates.index'
@@ -59,6 +60,11 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -98,6 +104,7 @@ const ApiPublicImgIdRoute = ApiPublicImgIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/gallery': typeof GalleryRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -114,6 +121,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/gallery': typeof GalleryRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/gallery': typeof GalleryRoute
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/gallery'
     | '/home'
     | '/profile'
     | '/schemes'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/gallery'
     | '/home'
     | '/profile'
     | '/services'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/gallery'
     | '/home'
     | '/profile'
     | '/schemes'
@@ -194,6 +206,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  GalleryRoute: typeof GalleryRoute
   HomeRoute: typeof HomeRoute
   ProfileRoute: typeof ProfileRoute
   SchemesRoute: typeof SchemesRouteWithChildren
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -336,6 +356,7 @@ const UpdatesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  GalleryRoute: GalleryRoute,
   HomeRoute: HomeRoute,
   ProfileRoute: ProfileRoute,
   SchemesRoute: SchemesRouteWithChildren,

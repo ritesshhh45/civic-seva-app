@@ -117,7 +117,7 @@ function Lightbox({
     return () => window.removeEventListener("keydown", onKey);
   }, [index, photos.length, onClose, onIndex]);
 
-  const dist = (t: TouchList) =>
+  const dist = (t: React.TouchList) =>
     Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
 
   const photo = photos[index];
