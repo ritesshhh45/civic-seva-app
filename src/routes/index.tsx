@@ -180,7 +180,9 @@ function SplashScreen() {
 
 function LoginScreen() {
   const navigate = useNavigate();
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { data: config } = useQuery(configQuery);
+
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [error, setError] = useState<string | null>(null);
