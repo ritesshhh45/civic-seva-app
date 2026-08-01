@@ -131,6 +131,9 @@ function SplashScreen() {
             priority
             className="h-full w-full bg-white/40"
           />
+        </div>
+
+
 
 
         <h1
