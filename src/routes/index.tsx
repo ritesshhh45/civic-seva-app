@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg", fetchpriority: "high" },
+      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
       { rel: "preload", as: "image", href: "/photos/portrait-header.jpg" },
     ],
   }),
