@@ -115,6 +115,7 @@ function SplashScreen() {
             src={config?.app_icon_url || config?.party_logo_url}
             alt=""
             fallback="none"
+            priority
             className="h-12 w-12 rounded-full bg-transparent"
           />
         </div>
@@ -127,9 +128,10 @@ function SplashScreen() {
             src={config?.splash_photo_url || config?.photo_url}
             alt={name}
             position="top"
+            priority
             className="h-full w-full bg-white/40"
           />
-        </div>
+
 
         <h1
           className="fade-up mt-8 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[oklch(0.32_0.07_50)]"
