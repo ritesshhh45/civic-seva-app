@@ -67,7 +67,7 @@ export function AppImage({
           alt={alt}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
-          {...(priority ? { fetchpriority: "high" as unknown as string } : {})}
+          fetchPriority={priority ? "high" : undefined}
           onError={() => setFailed(true)}
           className={cn(
             "h-full w-full object-cover",
