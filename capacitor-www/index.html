@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="mr">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"
+    />
+    <title>Sanjay Chaudhary — Ward Seva</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: "Baloo 2", system-ui, -apple-system, sans-serif;
+        background: linear-gradient(180deg, #fffdf8 0%, #ffe9c9 100%);
+        color: #5a3a10;
+      }
+      .wrap {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 32px;
+        text-align: center;
+      }
+      .dot {
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        border: 3px solid rgba(242, 118, 10, 0.25);
+        border-top-color: #f2760a;
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      h1 {
+        font-size: 1.1rem;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="dot"></div>
+      <h1>Sanjay Chaudhary — प्रभाग क्र. १०</h1>
+      <p>सेवा सुरू होत आहे… इंटरनेट कनेक्शन तपासा.</p>
+    </div>
+    <script>
+      // The native shell normally loads the production site (see capacitor.config.ts).
+      // This bundled page is only shown while that load is pending or offline.
+      setTimeout(function () {
+        location.replace("https://civic-seva-app.vercel.app/");
+      }, 4000);
+    </script>
+  </body>
+</html>
