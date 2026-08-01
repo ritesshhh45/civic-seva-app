@@ -11,12 +11,15 @@ type Props = {
   position?: "center" | "top";
   /** Rendered when there is no image or it fails to load. */
   fallback?: "icon" | "none";
+  /** Above-the-fold images (hero, splash portrait, logo) load eagerly. */
+  priority?: boolean;
 };
 
-/** Deployed site used by the packaged Android / iOS app for database-hosted images. */
+/** Production site used by the packaged Android / iOS app for database-hosted images. */
 const SITE_URL = (
-  import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.lovable.app"
+  import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.vercel.app"
 ).replace(/\/$/, "");
+
 
 function isNative() {
   if (typeof window === "undefined") return false;
