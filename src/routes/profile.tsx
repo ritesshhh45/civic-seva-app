@@ -142,6 +142,11 @@ function ProfilePage() {
           >
             <LogOut className="h-4 w-4" /> {t("logout")}
           </button>
+
+          <p className="pt-2 text-center text-[0.7rem] text-muted-foreground">
+            Developed by <span className="font-semibold text-foreground">Ritesh Pawar</span>
+          </p>
+
         </div>
       )}
     </AppLayout>
