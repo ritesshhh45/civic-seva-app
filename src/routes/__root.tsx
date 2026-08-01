@@ -85,14 +85,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Sanjay Chaudhary — Ward Seva App" },
       {
         name: "description",
-        content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
+        content:
+          "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:title", content: "Sanjay Chaudhary — Ward Seva App" },
       { name: "twitter:title", content: "Sanjay Chaudhary — Ward Seva App" },
-      { property: "og:description", content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp." },
-      { name: "twitter:description", content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp." },
+      {
+        property: "og:description",
+        content:
+          "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
+      },
     ],
 
     links: [

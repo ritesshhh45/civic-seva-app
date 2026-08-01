@@ -23,7 +23,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Sanjay Chaudhary — Ward Seva App" },
       {
         property: "og:description",
-        content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
+        content:
+          "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
       { property: "og:image", content: `${SITE}/photos/portrait-header.jpg` },
       { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
@@ -35,7 +36,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Entry,
 });
-
 
 function Entry() {
   const navigate = useNavigate();
@@ -133,9 +133,6 @@ function SplashScreen() {
           />
         </div>
 
-
-
-
         <h1
           className="fade-up mt-8 text-center text-[2rem] font-extrabold leading-tight tracking-tight text-[oklch(0.32_0.07_50)]"
           style={{ animationDelay: "220ms" }}
@@ -163,7 +160,10 @@ function SplashScreen() {
       </div>
 
       {/* loading */}
-      <div className="fade-up relative z-10 w-full max-w-xs px-8 pb-10 text-center" style={{ animationDelay: "640ms" }}>
+      <div
+        className="fade-up relative z-10 w-full max-w-xs px-8 pb-10 text-center"
+        style={{ animationDelay: "640ms" }}
+      >
         <div className="relative h-[3px] w-full overflow-hidden rounded-full bg-white/60">
           <div className="tri-sweep tricolor-bar absolute inset-y-0 left-0 w-1/2 rounded-full" />
         </div>
@@ -199,7 +199,11 @@ function LoginScreen() {
       saveProfile({ name: name.trim(), mobile: mobile.trim() });
       navigate({ to: "/home" });
     } catch (err) {
-      setError(err instanceof Error && err.message ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -316,7 +320,6 @@ function LoginScreen() {
           Developed by <span className="font-semibold text-foreground">Ritesh Pawar</span>
         </p>
       </form>
-
     </div>
   );
 }

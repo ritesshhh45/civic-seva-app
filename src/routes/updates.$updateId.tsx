@@ -30,7 +30,9 @@ function UpdateDetail() {
     <AppLayout back title={t("updates")}>
       {() =>
         !u ? (
-          <p className="card-premium p-6 text-center text-sm text-muted-foreground">{t("noUpdates")}</p>
+          <p className="card-premium p-6 text-center text-sm text-muted-foreground">
+            {t("noUpdates")}
+          </p>
         ) : (
           <article className="card-premium animate-rise overflow-hidden">
             {u.image_url ? <AppImage src={u.image_url} alt="" className="h-52 w-full" /> : null}

@@ -16,10 +16,10 @@ type Props = {
 };
 
 /** Production site used by the packaged Android / iOS app for database-hosted images. */
-const SITE_URL = (
-  import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.vercel.app"
-).replace(/\/$/, "");
-
+const SITE_URL = (import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.vercel.app").replace(
+  /\/$/,
+  "",
+);
 
 function isNative() {
   if (typeof window === "undefined") return false;
@@ -75,7 +75,6 @@ export function AppImage({
           )}
         />
       ) : (
-
         <div className="flex h-full w-full items-center justify-center text-muted-foreground/50">
           <ImageIcon className="h-6 w-6" />
         </div>

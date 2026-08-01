@@ -34,25 +34,32 @@ function SchemesPage() {
   const [cat, setCat] = useState<string>("__all");
 
   const rows = (data ?? []).filter((s) => s.is_active);
-  const cats = Array.from(new Set(rows.map((s) => pick(lang, s.category_mr, s.category_en)).filter(Boolean)));
-  const shown = cat === "__all" ? rows : rows.filter((s) => pick(lang, s.category_mr, s.category_en) === cat);
+  const cats = Array.from(
+    new Set(rows.map((s) => pick(lang, s.category_mr, s.category_en)).filter(Boolean)),
+  );
+  const shown =
+    cat === "__all" ? rows : rows.filter((s) => pick(lang, s.category_mr, s.category_en) === cat);
 
   return (
     <AppLayout title={t("schemes")} subtitle={t("schemesSub")}>
       {() => (
         <div className="space-y-4">
           <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
-            {[{ k: "__all", label: t("all") }, ...cats.map((c) => ({ k: c, label: c }))].map((c) => (
-              <button
-                key={c.k}
-                onClick={() => setCat(c.k)}
-                className={`press whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold ${
-                  cat === c.k ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground shadow-soft"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
+            {[{ k: "__all", label: t("all") }, ...cats.map((c) => ({ k: c, label: c }))].map(
+              (c) => (
+                <button
+                  key={c.k}
+                  onClick={() => setCat(c.k)}
+                  className={`press whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold ${
+                    cat === c.k
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-muted-foreground shadow-soft"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ),
+            )}
           </div>
 
           {shown.length === 0 ? (

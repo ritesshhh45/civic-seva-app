@@ -16,12 +16,7 @@ const config: CapacitorConfig = {
     url: "https://civic-seva-app.vercel.app",
     androidScheme: "https",
     cleartext: false,
-    allowNavigation: [
-      "civic-seva-app.vercel.app",
-      "*.supabase.co",
-      "wa.me",
-      "api.whatsapp.com",
-    ],
+    allowNavigation: ["civic-seva-app.vercel.app", "*.supabase.co", "wa.me", "api.whatsapp.com"],
   },
   plugins: {
     SplashScreen: {

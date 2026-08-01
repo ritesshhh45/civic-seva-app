@@ -11,9 +11,15 @@ export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
       { title: "Gallery — Sanjay Chaudhary Ward Seva App" },
-      { name: "description", content: "Photos and videos of development work and events in Ward No. 10." },
+      {
+        name: "description",
+        content: "Photos and videos of development work and events in Ward No. 10.",
+      },
       { property: "og:title", content: "Gallery — Sanjay Chaudhary Ward Seva App" },
-      { property: "og:description", content: "Photos of development work and events in Ward No. 10." },
+      {
+        property: "og:description",
+        content: "Photos of development work and events in Ward No. 10.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -81,7 +87,12 @@ function GalleryPage() {
           ) : null}
 
           {open !== null ? (
-            <Lightbox photos={photos} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
+            <Lightbox
+              photos={photos}
+              index={open}
+              onClose={() => setOpen(null)}
+              onIndex={setOpen}
+            />
           ) : null}
         </div>
       )}

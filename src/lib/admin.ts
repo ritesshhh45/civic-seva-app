@@ -11,7 +11,12 @@ export type AdminTableName =
 
 export type AdminMe =
   | { status: "anon" }
-  | { status: "pending" | "approved" | "denied" | "revoked"; role: string; email: string; name: string };
+  | {
+      status: "pending" | "approved" | "denied" | "revoked";
+      role: string;
+      email: string;
+      name: string;
+    };
 
 /** Who the currently signed-in email is, from the database. */
 export function adminMe() {
