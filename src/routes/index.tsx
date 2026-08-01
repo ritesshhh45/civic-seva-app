@@ -9,6 +9,8 @@ import { requestNotificationPermission } from "@/lib/push";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
+const SITE = "https://civic-seva-app.vercel.app";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -23,10 +25,17 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
+      { property: "og:image", content: `${SITE}/photos/portrait-header.jpg` },
+      { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
+    ],
+    links: [
+      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg", fetchpriority: "high" },
+      { rel: "preload", as: "image", href: "/photos/portrait-header.jpg" },
     ],
   }),
   component: Entry,
 });
+
 
 function Entry() {
   const navigate = useNavigate();
