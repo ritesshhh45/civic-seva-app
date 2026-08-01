@@ -11,12 +11,15 @@ type Props = {
   position?: "center" | "top";
   /** Rendered when there is no image or it fails to load. */
   fallback?: "icon" | "none";
+  /** Above-the-fold images (hero, splash portrait, logo) load eagerly. */
+  priority?: boolean;
 };
 
-/** Deployed site used by the packaged Android / iOS app for database-hosted images. */
-const SITE_URL = (
-  import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.lovable.app"
-).replace(/\/$/, "");
+/** Production site used by the packaged Android / iOS app for database-hosted images. */
+const SITE_URL = (import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.vercel.app").replace(
+  /\/$/,
+  "",
+);
 
 function isNative() {
   if (typeof window === "undefined") return false;
@@ -42,7 +45,14 @@ export function resolveImageUrl(src?: string | null) {
  * or shows a broken-image icon: the frame owns the shape, the photo is cropped
  * to fill it.
  */
-export function AppImage({ src, alt, className, position = "center", fallback = "icon" }: Props) {
+export function AppImage({
+  src,
+  alt,
+  className,
+  position = "center",
+  fallback = "icon",
+  priority = false,
+}: Props) {
   const [failed, setFailed] = useState(false);
   const url = resolveImageUrl(src);
   const ok = Boolean(url) && !failed;
@@ -55,7 +65,9 @@ export function AppImage({ src, alt, className, position = "center", fallback = 
         <img
           src={url as string}
           alt={alt}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          decoding={priority ? "sync" : "async"}
+          fetchPriority={priority ? "high" : undefined}
           onError={() => setFailed(true)}
           className={cn(
             "h-full w-full object-cover",

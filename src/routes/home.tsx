@@ -1,6 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Phone, MessageCircle, MapPin, TriangleAlert, ArrowRight, ChevronRight, Landmark } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  MapPin,
+  TriangleAlert,
+  ArrowRight,
+  ChevronRight,
+  Landmark,
+} from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
 import { CategoryIcon } from "@/components/CategoryIcon";
@@ -133,7 +141,10 @@ function HomePage() {
           <section className="animate-rise">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-base font-extrabold">{t("todayUpdates")}</h2>
-              <Link to="/updates" className="flex items-center gap-1 text-xs font-bold text-primary">
+              <Link
+                to="/updates"
+                className="flex items-center gap-1 text-xs font-bold text-primary"
+              >
                 {t("viewAll")} <ChevronRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -167,7 +178,9 @@ function HomePage() {
                         {pick(lang, u.body_mr, u.body_en)}
                       </p>
                       <p className="pt-1 text-[10px] text-muted-foreground">
-                        {new Date(u.publish_at).toLocaleDateString(lang === "mr" ? "mr-IN" : "en-IN")}
+                        {new Date(u.publish_at).toLocaleDateString(
+                          lang === "mr" ? "mr-IN" : "en-IN",
+                        )}
                       </p>
                     </div>
                   </Link>
@@ -226,7 +239,10 @@ function HomePage() {
             <section className="animate-rise">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-base font-extrabold">{t("schemes")}</h2>
-                <Link to="/schemes" className="flex items-center gap-1 text-xs font-bold text-primary">
+                <Link
+                  to="/schemes"
+                  className="flex items-center gap-1 text-xs font-bold text-primary"
+                >
                   {t("viewAll")} <ChevronRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

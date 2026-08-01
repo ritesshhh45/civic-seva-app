@@ -9,6 +9,8 @@ import { requestNotificationPermission } from "@/lib/push";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
+const SITE = "https://civic-seva-app.vercel.app";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -21,8 +23,15 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Sanjay Chaudhary — Ward Seva App" },
       {
         property: "og:description",
-        content: "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
+        content:
+          "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
+      { property: "og:image", content: `${SITE}/photos/portrait-header.jpg` },
+      { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
+    ],
+    links: [
+      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
+      { rel: "preload", as: "image", href: "/photos/portrait-header.jpg" },
     ],
   }),
   component: Entry,
@@ -106,6 +115,7 @@ function SplashScreen() {
             src={config?.app_icon_url || config?.party_logo_url}
             alt=""
             fallback="none"
+            priority
             className="h-12 w-12 rounded-full bg-transparent"
           />
         </div>
@@ -118,6 +128,7 @@ function SplashScreen() {
             src={config?.splash_photo_url || config?.photo_url}
             alt={name}
             position="top"
+            priority
             className="h-full w-full bg-white/40"
           />
         </div>
@@ -149,7 +160,10 @@ function SplashScreen() {
       </div>
 
       {/* loading */}
-      <div className="fade-up relative z-10 w-full max-w-xs px-8 pb-10 text-center" style={{ animationDelay: "640ms" }}>
+      <div
+        className="fade-up relative z-10 w-full max-w-xs px-8 pb-10 text-center"
+        style={{ animationDelay: "640ms" }}
+      >
         <div className="relative h-[3px] w-full overflow-hidden rounded-full bg-white/60">
           <div className="tri-sweep tricolor-bar absolute inset-y-0 left-0 w-1/2 rounded-full" />
         </div>
@@ -166,7 +180,9 @@ function SplashScreen() {
 
 function LoginScreen() {
   const navigate = useNavigate();
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const { data: config } = useQuery(configQuery);
+
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -183,51 +199,126 @@ function LoginScreen() {
       saveProfile({ name: name.trim(), mobile: mobile.trim() });
       navigate({ to: "/home" });
     } catch (err) {
-      setError(err instanceof Error && err.message ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-10">
       <div className="tricolor-bar h-1.5 w-full" />
-      <div className="mx-auto flex max-w-md justify-end px-4 pt-3">
-        <LangToggle />
-      </div>
-      <form onSubmit={submit} className="mx-auto max-w-md px-5 pt-6">
-        <h1 className="text-2xl font-extrabold">{t("loginTitle")}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{t("loginSub")}</p>
 
-        <div className="card-soft mt-6 space-y-4 p-5">
-          <label className="block">
-            <span className="text-sm font-semibold">{t("name")}</span>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-input bg-background px-4 py-3 text-base outline-none focus:border-primary"
-              autoComplete="name"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm font-semibold">{t("mobile")}</span>
-            <input
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
-              inputMode="numeric"
-              className="mt-1.5 w-full rounded-xl border border-input bg-background px-4 py-3 text-base tracking-wide outline-none focus:border-primary"
-              autoComplete="tel"
-            />
-          </label>
-          {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
-          <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-soft disabled:opacity-60"
-          >
-            {t("submit")}
-          </button>
+      {/* premium saffron welcome header */}
+      <header className="relative overflow-hidden">
+        <div className="saffron-gradient absolute inset-0" aria-hidden />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-white/25 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-20 top-10 h-48 w-48 rounded-full bg-[oklch(0.85_0.15_140)]/25 blur-3xl"
+        />
+
+        <div className="relative mx-auto max-w-md px-5 pb-16 pt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-soft ring-1 ring-white/70">
+              <AppImage
+                src={config?.app_icon_url || config?.party_logo_url}
+                alt=""
+                fallback="none"
+                priority
+                className="h-8 w-8 rounded-full bg-transparent"
+              />
+            </div>
+            <LangToggle />
+          </div>
+
+          <div className="mt-6 flex flex-col items-center text-center">
+            <div className="rounded-full bg-white/90 p-1.5 shadow-[0_18px_40px_-18px_rgba(120,60,0,0.65)]">
+              <AppImage
+                src={config?.header_photo_url || config?.photo_url}
+                alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
+                position="top"
+                priority
+                className="h-28 w-28 rounded-full"
+              />
+            </div>
+            <p className="mt-4 text-xl font-extrabold text-white drop-shadow-sm">
+              आपले हार्दिक स्वागत आहे
+            </p>
+            <p className="mt-1 text-sm font-semibold text-white/90">
+              {config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""} •{" "}
+              {config ? pick(lang, config.ward_mr, config.ward_en) : ""}
+            </p>
+          </div>
         </div>
+
+        {/* abstract tricolour wave */}
+        <svg
+          viewBox="0 0 400 60"
+          preserveAspectRatio="none"
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-14 w-full"
+        >
+          <path d="M0 34 Q100 6 200 30 T400 22 V60 H0Z" fill="oklch(0.75 0.16 140 / 0.35)" />
+          <path d="M0 42 Q110 16 210 38 T400 32 V60 H0Z" fill="oklch(0.98 0.02 90 / 0.6)" />
+          <path d="M0 50 Q120 28 220 46 T400 42 V60 H0Z" fill="var(--background)" />
+        </svg>
+      </header>
+
+      <form onSubmit={submit} className="mx-auto -mt-4 max-w-md px-5">
+        <div className="glass-card p-6">
+          <div className="flex items-center gap-2">
+            <span className="h-5 w-1.5 rounded-full bg-primary" />
+            <h1 className="text-xl font-extrabold">{t("loginTitle")}</h1>
+          </div>
+          <p className="mt-1.5 text-sm text-muted-foreground">{t("loginSub")}</p>
+
+          <div className="mt-5 space-y-4">
+            <label className="block">
+              <span className="text-sm font-semibold">{t("name")}</span>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1.5 w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                autoComplete="name"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-semibold">{t("mobile")}</span>
+              <input
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                inputMode="numeric"
+                className="mt-1.5 w-full rounded-2xl border border-input bg-card px-4 py-3.5 text-base tracking-wide outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                autoComplete="tel"
+              />
+            </label>
+            {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
+            <button
+              type="submit"
+              disabled={busy}
+              className="press w-full rounded-2xl bg-primary py-4 text-base font-bold text-primary-foreground shadow-soft disabled:opacity-60"
+            >
+              {t("submit")}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-center gap-2 text-[0.7rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="h-px w-8 bg-border" />
+          जनसेवा • विकास • विश्वास
+          <span className="h-px w-8 bg-border" />
+        </div>
+        <p className="mt-3 text-center text-[0.7rem] text-muted-foreground">
+          Developed by <span className="font-semibold text-foreground">Ritesh Pawar</span>
+        </p>
       </form>
     </div>
   );

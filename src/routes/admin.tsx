@@ -270,7 +270,11 @@ function AdminLogin({ onSuccess }: { onSuccess: (s: Approved) => void }) {
             disabled={busy}
             className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-60"
           >
-            {mode === "signup" ? "Create account" : mode === "forgot" ? "Send reset link" : "Sign in"}
+            {mode === "signup"
+              ? "Create account"
+              : mode === "forgot"
+                ? "Send reset link"
+                : "Sign in"}
           </button>
           <div className="flex items-center justify-between text-xs font-semibold">
             <button
@@ -312,16 +316,8 @@ const TABS = [
   "Admins",
 ] as const;
 
-
-function AdminDashboard({
-  session,
-  onLogout,
-}: {
-  session: Approved;
-  onLogout: () => void;
-}) {
+function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: () => void }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
-
 
   return (
     <div className="min-h-screen bg-background pb-16">
@@ -343,7 +339,9 @@ function AdminDashboard({
             key={tItem}
             onClick={() => setTab(tItem)}
             className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold ${
-              tab === tItem ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              tab === tItem
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
             }`}
           >
             {tItem}
@@ -543,12 +541,7 @@ function SettingsTab() {
     <div className="card-soft space-y-4 p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         {images.map(([key, label]) => (
-          <ImageField
-            key={key}
-            label={label}
-            value={form[key] ?? ""}
-            onChange={set(key)}
-          />
+          <ImageField key={key} label={label} value={form[key] ?? ""} onChange={set(key)} />
         ))}
         {fields.map(([key, label]) => (
           <Field key={key} label={label} value={form[key] ?? ""} onChange={set(key)} />

@@ -1,35 +1,39 @@
 # Building the Android APK (and the iOS app)
 
-The app is server-rendered, so the native shell loads the published site
-(`https://civic-seva-app.lovable.app`, set in `capacitor.config.ts`). Publish the
-web app from Lovable first, then run the commands below.
+The app is server-rendered on Vercel, so the native shell loads the production
+site `https://civic-seva-app.vercel.app` (set in `capacitor.config.ts`). The
+`capacitor-www/` folder is the bundled offline fallback page Capacitor requires
+as its `webDir` — it is committed, so no build step is needed before `cap sync`.
+
+The `android/` project is committed and already contains a valid
+`capacitor.config.json` and `capacitor.plugins.json` (both regenerated on every
+`cap sync`).
+
+## Exact command sequence (run in order)
+
+```bash
+npm install
+npm run build          # Vercel/web build — verifies the app compiles
+npx cap sync android   # regenerates capacitor.config.json + capacitor.plugins.json
+npx cap open android   # opens Android Studio
+```
+
+Shortcuts are also available: `npm run android` (build + sync),
+`npm run cap:sync`, `npm run cap:open`.
 
 ## One-time setup on your machine
 
 Install Node 20+, Java 21 (JDK) and Android Studio (with the Android SDK and
 "Android SDK Command-line Tools" checked in SDK Manager).
 
-```bash
-git clone <your-repo-url> sanjay-app
-cd sanjay-app
-npm install
-npm run build          # produces dist/client (needed by Capacitor)
-npx cap add android    # first time only — creates the android/ folder
-```
-
 ## Build a debug APK (installable today)
 
 ```bash
-npm run build
+npm install
 npx cap sync android
 cd android
 ./gradlew assembleDebug
 # APK: android/app/build/outputs/apk/debug/app-debug.apk
-```
-
-Install it on a phone connected over USB:
-
-```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
@@ -68,17 +72,16 @@ buildTypes {
 Then:
 
 ```bash
-npm run build
 npx cap sync android
 cd android
-./gradlew bundleRelease   # AAB for Play Store: app/build/outputs/bundle/release/app-release.aab
-./gradlew assembleRelease # APK for direct install: app/build/outputs/apk/release/app-release.apk
+./gradlew bundleRelease   # AAB: app/build/outputs/bundle/release/app-release.aab
+./gradlew assembleRelease # APK: app/build/outputs/apk/release/app-release.apk
 ```
 
 ## iOS (needs a Mac + Xcode)
 
 ```bash
-npm run build
+npm install
 npx cap add ios       # first time only
 npx cap sync ios
 npx cap open ios      # set signing team, then Product > Archive
@@ -107,7 +110,7 @@ npx cap sync
 
 ## Admin panel
 
-Open `/admin` (also reachable from Profile → Admin when signed in as an admin).
+Open `/admin` (also reachable from Profile → Admin when signed in).
 Sign in with **email + password**. `ritesshhh19@gmail.com` is the primary admin:
 the first time, use "First time? Create account", verify the emailed link and
 sign in. Any other email that signs up lands in the Admins tab as a pending

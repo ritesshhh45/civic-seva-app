@@ -12,10 +12,14 @@ export const Route = createFileRoute("/schemes/$schemeId")({
       { title: "Scheme details — Ward Seva App" },
       {
         name: "description",
-        content: "Eligibility, required documents, benefits and the official apply link for this government scheme.",
+        content:
+          "Eligibility, required documents, benefits and the official apply link for this government scheme.",
       },
       { property: "og:title", content: "Scheme details — Ward Seva App" },
-      { property: "og:description", content: "Eligibility, documents, benefits and official apply link." },
+      {
+        property: "og:description",
+        content: "Eligibility, documents, benefits and official apply link.",
+      },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -43,7 +47,9 @@ function SchemeDetail() {
     <AppLayout back title={s ? pick(lang, s.name_mr, s.name_en) : t("schemes")}>
       {() =>
         !s ? (
-          <p className="card-premium p-6 text-center text-sm text-muted-foreground">{t("noSchemes")}</p>
+          <p className="card-premium p-6 text-center text-sm text-muted-foreground">
+            {t("noSchemes")}
+          </p>
         ) : (
           <div className="space-y-4 pb-6">
             <div className="card-premium animate-rise overflow-hidden">

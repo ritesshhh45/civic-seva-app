@@ -85,7 +85,12 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
           </div>
 
           {!back && config?.party_logo_url ? (
-            <AppImage src={config.party_logo_url} alt="" fallback="none" className="h-9 w-9 shrink-0 rounded-full bg-card" />
+            <AppImage
+              src={config.party_logo_url}
+              alt=""
+              fallback="none"
+              className="h-9 w-9 shrink-0 rounded-full bg-card"
+            />
           ) : null}
 
           <Link

@@ -10,7 +10,10 @@ export const Route = createFileRoute("/updates/")({
   head: () => ({
     meta: [
       { title: "Updates — Sanjay Chaudhary Ward Seva App" },
-      { name: "description", content: "Ward announcements, alerts and notices from your representative." },
+      {
+        name: "description",
+        content: "Ward announcements, alerts and notices from your representative.",
+      },
       { property: "og:title", content: "Updates — Sanjay Chaudhary Ward Seva App" },
       { property: "og:description", content: "Latest ward announcements and alerts." },
       { property: "og:type", content: "website" },

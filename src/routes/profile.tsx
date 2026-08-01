@@ -1,6 +1,15 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Phone, MessageCircle, LogOut, Shield, ListChecks, MapPin, PlayCircle, Images } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  LogOut,
+  Shield,
+  ListChecks,
+  MapPin,
+  PlayCircle,
+  Images,
+} from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { clearProfile } from "@/lib/device";
 import { configQuery, galleryQuery, waLink } from "@/lib/queries";
@@ -11,7 +20,10 @@ export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
       { title: "Profile — Sanjay Chaudhary Ward Seva App" },
-      { name: "description", content: "Your saved details, ward office contact, photos and videos." },
+      {
+        name: "description",
+        content: "Your saved details, ward office contact, photos and videos.",
+      },
       { property: "og:title", content: "Profile — Sanjay Chaudhary Ward Seva App" },
       { property: "og:description", content: "Your details, ward contacts and media gallery." },
       { property: "og:type", content: "profile" },
@@ -79,11 +91,17 @@ function ProfilePage() {
             </div>
           </section>
 
-          <Link to="/takrari" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
+          <Link
+            to="/takrari"
+            className="press card-premium flex items-center gap-3 p-4 text-sm font-bold"
+          >
             <ListChecks className="h-5 w-5 text-primary" /> {t("myComplaints")}
           </Link>
 
-          <Link to="/gallery" className="press card-premium flex items-center gap-3 p-4 text-sm font-bold">
+          <Link
+            to="/gallery"
+            className="press card-premium flex items-center gap-3 p-4 text-sm font-bold"
+          >
             <Images className="h-5 w-5 text-primary" /> {t("gallery")}
           </Link>
 
@@ -142,6 +160,10 @@ function ProfilePage() {
           >
             <LogOut className="h-4 w-4" /> {t("logout")}
           </button>
+
+          <p className="pt-2 text-center text-[0.7rem] text-muted-foreground">
+            Developed by <span className="font-semibold text-foreground">Ritesh Pawar</span>
+          </p>
         </div>
       )}
     </AppLayout>

@@ -165,7 +165,11 @@ export function GalleryManager() {
               }}
               className="card-soft space-y-3 p-4"
             >
-              <AppImage src={row.image_url} alt={row.title_en} className="h-40 w-full rounded-2xl" />
+              <AppImage
+                src={row.image_url}
+                alt={row.title_en}
+                className="h-40 w-full rounded-2xl"
+              />
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>
                   {row.created_at
