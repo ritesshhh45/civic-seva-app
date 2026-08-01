@@ -45,7 +45,14 @@ export function resolveImageUrl(src?: string | null) {
  * or shows a broken-image icon: the frame owns the shape, the photo is cropped
  * to fill it.
  */
-export function AppImage({ src, alt, className, position = "center", fallback = "icon" }: Props) {
+export function AppImage({
+  src,
+  alt,
+  className,
+  position = "center",
+  fallback = "icon",
+  priority = false,
+}: Props) {
   const [failed, setFailed] = useState(false);
   const url = resolveImageUrl(src);
   const ok = Boolean(url) && !failed;
@@ -58,7 +65,9 @@ export function AppImage({ src, alt, className, position = "center", fallback = 
         <img
           src={url as string}
           alt={alt}
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          decoding={priority ? "sync" : "async"}
+          fetchPriority={priority ? "high" : "auto"}
           onError={() => setFailed(true)}
           className={cn(
             "h-full w-full object-cover",
@@ -66,6 +75,7 @@ export function AppImage({ src, alt, className, position = "center", fallback = 
           )}
         />
       ) : (
+
         <div className="flex h-full w-full items-center justify-center text-muted-foreground/50">
           <ImageIcon className="h-6 w-6" />
         </div>
