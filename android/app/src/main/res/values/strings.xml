@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Sanjay Chaudhary</string>
+    <string name="title_activity_main">Sanjay Chaudhary</string>
+    <string name="package_name">in.wardseva.sanjaychaudhary</string>
+    <string name="custom_url_scheme">in.wardseva.sanjaychaudhary</string>
+</resources>

@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as TakrariRouteImport } from './routes/takrari'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -32,11 +31,6 @@ const UpdatesRoute = UpdatesRouteImport.update({
 const TakrariRoute = TakrariRouteImport.update({
   id: '/takrari',
   path: '/takrari',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -103,7 +97,6 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
@@ -118,7 +111,6 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
@@ -134,7 +126,6 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
@@ -152,7 +143,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/schemes'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
@@ -167,7 +157,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/profile'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
@@ -182,7 +171,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/schemes'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
@@ -199,7 +187,6 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   ServicesRoute: typeof ServicesRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
   UpdatesRoute: typeof UpdatesRouteWithChildren
 }
@@ -218,13 +205,6 @@ declare module '@tanstack/react-router' {
       path: '/takrari'
       fullPath: '/takrari'
       preLoaderRoute: typeof TakrariRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -341,7 +321,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SchemesRoute: SchemesRouteWithChildren,
   ServicesRoute: ServicesRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
   UpdatesRoute: UpdatesRouteWithChildren,
 }
