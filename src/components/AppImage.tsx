@@ -50,8 +50,6 @@ export function AppImage({
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
           fetchPriority={priority ? "high" : undefined}
-          width={priority ? 800 : undefined}
-          height={priority ? 1200 : undefined}
           onError={() => setFailed(true)}
           className={cn(
             "h-full w-full object-cover",
