@@ -9,8 +9,6 @@ import { requestNotificationPermission } from "@/lib/push";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
-const SITE = "https://civic-seva-app.vercel.app";
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -26,8 +24,8 @@ export const Route = createFileRoute("/")({
         content:
           "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
-      { property: "og:image", content: `${SITE}/photos/portrait-header.jpg` },
-      { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
@@ -112,9 +110,8 @@ function SplashScreen() {
       <div className="fade-up relative z-10 pt-10">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-white/85 shadow-[0_10px_30px_-14px_rgba(120,70,10,0.6)] ring-1 ring-white/70 backdrop-blur-md">
           <AppImage
-            src={config?.app_icon_url || config?.party_logo_url}
-            alt=""
-            fallback="none"
+               src="/branding/bjp-lotus.png"
+               alt="Bharatiya Janata Party lotus"
             priority
             className="h-12 w-12 rounded-full bg-transparent"
           />
@@ -229,9 +226,8 @@ function LoginScreen() {
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-soft ring-1 ring-white/70">
               <AppImage
-                src={config?.app_icon_url || config?.party_logo_url}
-                alt=""
-                fallback="none"
+                src="/branding/bjp-lotus.png"
+                alt="Bharatiya Janata Party lotus"
                 priority
                 className="h-8 w-8 rounded-full bg-transparent"
               />

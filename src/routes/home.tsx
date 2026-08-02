@@ -88,6 +88,7 @@ function HomePage() {
                 alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
                 position="top"
                 fallback="none"
+                priority
                 className="h-24 w-24 shrink-0 rounded-3xl shadow-soft ring-1 ring-primary/15"
               />
 

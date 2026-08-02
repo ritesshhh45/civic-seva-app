@@ -182,8 +182,19 @@
 
 /* ---- splash: sunrise, particles, golden rim, loading line ---- */
 
-#lovable-badge {
+#lovable-badge,
+[data-lovable-badge] {
   display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @utility sunrise-bg {
