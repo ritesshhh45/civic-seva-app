@@ -1,21 +1,15 @@
 # Building the Android APK (and the iOS app)
 
-The app is server-rendered on Vercel, so the native shell loads the production
-site `https://civic-seva-app.vercel.app` (set in `capacitor.config.ts`). The
-`capacitor-www/` folder is the bundled offline fallback page Capacitor requires
-as its `webDir` — it is committed, so no build step is needed before `cap sync`.
-
-The `android/` project is committed and already contains a valid
-`capacitor.config.json` and `capacitor.plugins.json` (both regenerated on every
-`cap sync`).
+The app is a Vite SPA. Capacitor packages `dist/` and is configured to open only
+the production site `https://civic-seva-app.vercel.app`.
 
 ## Exact command sequence (run in order)
 
 ```bash
 npm install
-npm run build          # Vercel/web build — verifies the app compiles
-npx cap sync android   # regenerates capacitor.config.json + capacitor.plugins.json
-npx cap open android   # opens Android Studio
+npm run build
+npx cap sync android
+npx cap open android
 ```
 
 Shortcuts are also available: `npm run android` (build + sync),

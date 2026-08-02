@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UpdatesRouteImport } from './routes/updates'
 import { Route as TakrariRouteImport } from './routes/takrari'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SchemesRouteImport } from './routes/schemes'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -23,7 +22,6 @@ import { Route as UpdatesIndexRouteImport } from './routes/updates.index'
 import { Route as SchemesIndexRouteImport } from './routes/schemes.index'
 import { Route as UpdatesUpdateIdRouteImport } from './routes/updates.$updateId'
 import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
-import { Route as ApiPublicImgIdRouteImport } from './routes/api/public/img.$id'
 
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
@@ -33,11 +31,6 @@ const UpdatesRoute = UpdatesRouteImport.update({
 const TakrariRoute = TakrariRouteImport.update({
   id: '/takrari',
   path: '/takrari',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -95,11 +88,6 @@ const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
   path: '/$schemeId',
   getParentRoute: () => SchemesRoute,
 } as any)
-const ApiPublicImgIdRoute = ApiPublicImgIdRouteImport.update({
-  id: '/api/public/img/$id',
-  path: '/api/public/img/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,14 +97,12 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes/': typeof SchemesIndexRoute
   '/updates/': typeof UpdatesIndexRoute
-  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -125,13 +111,11 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/profile': typeof ProfileRoute
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes': typeof SchemesIndexRoute
   '/updates': typeof UpdatesIndexRoute
-  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,14 +126,12 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/schemes': typeof SchemesRouteWithChildren
   '/services': typeof ServicesRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/takrari': typeof TakrariRoute
   '/updates': typeof UpdatesRouteWithChildren
   '/schemes/$schemeId': typeof SchemesSchemeIdRoute
   '/updates/$updateId': typeof UpdatesUpdateIdRoute
   '/schemes/': typeof SchemesIndexRoute
   '/updates/': typeof UpdatesIndexRoute
-  '/api/public/img/$id': typeof ApiPublicImgIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,14 +143,12 @@ export interface FileRouteTypes {
     | '/profile'
     | '/schemes'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
     | '/schemes/'
     | '/updates/'
-    | '/api/public/img/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -177,13 +157,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/profile'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
     | '/schemes'
     | '/updates'
-    | '/api/public/img/$id'
   id:
     | '__root__'
     | '/'
@@ -193,14 +171,12 @@ export interface FileRouteTypes {
     | '/profile'
     | '/schemes'
     | '/services'
-    | '/sitemap.xml'
     | '/takrari'
     | '/updates'
     | '/schemes/$schemeId'
     | '/updates/$updateId'
     | '/schemes/'
     | '/updates/'
-    | '/api/public/img/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -211,10 +187,8 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SchemesRoute: typeof SchemesRouteWithChildren
   ServicesRoute: typeof ServicesRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TakrariRoute: typeof TakrariRoute
   UpdatesRoute: typeof UpdatesRouteWithChildren
-  ApiPublicImgIdRoute: typeof ApiPublicImgIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -231,13 +205,6 @@ declare module '@tanstack/react-router' {
       path: '/takrari'
       fullPath: '/takrari'
       preLoaderRoute: typeof TakrariRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -317,13 +284,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SchemesSchemeIdRouteImport
       parentRoute: typeof SchemesRoute
     }
-    '/api/public/img/$id': {
-      id: '/api/public/img/$id'
-      path: '/api/public/img/$id'
-      fullPath: '/api/public/img/$id'
-      preLoaderRoute: typeof ApiPublicImgIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -361,10 +321,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SchemesRoute: SchemesRouteWithChildren,
   ServicesRoute: ServicesRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TakrariRoute: TakrariRoute,
   UpdatesRoute: UpdatesRouteWithChildren,
-  ApiPublicImgIdRoute: ApiPublicImgIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

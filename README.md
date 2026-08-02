@@ -1,14 +1,6 @@
-# Welcome to your Lovable project
+# Sanjay Chaudhary Ward Seva
 
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+Production citizen-services application for Ward No. 10. Residents can read ward updates, browse government schemes, and send civic complaints through WhatsApp. The authenticated admin panel controls representative details, categories, updates, works, schemes, and gallery content.
 
 ## Development
 
@@ -17,13 +9,15 @@ Prefer working locally? You need Node.js and npm — [install with nvm](https://
 ```sh
 git clone <this-repository-url>
 cd <repository-name>
-npm i
+npm install
 npm run dev
 ```
 
 ## Built with
 
-- TanStack Start
+- Vite SPA
+- TanStack Router
 - TypeScript
 - React
 - Tailwind CSS
+- Lovable Cloud database and authentication

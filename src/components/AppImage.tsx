@@ -15,28 +15,10 @@ type Props = {
   priority?: boolean;
 };
 
-/** Production site used by the packaged Android / iOS app for database-hosted images. */
-const SITE_URL = (import.meta.env.VITE_SITE_URL ?? "https://civic-seva-app.vercel.app").replace(
-  /\/$/,
-  "",
-);
-
-function isNative() {
-  if (typeof window === "undefined") return false;
-  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
-  return Boolean(cap?.isNativePlatform?.());
-}
-
-/**
- * Uploaded images are served by the app's own `/api/public/img/:id` route, which
- * does not exist inside the packaged native bundle — there we point at the
- * deployed site instead. Bundled files under /photos stay relative everywhere.
- */
 export function resolveImageUrl(src?: string | null) {
   if (!src) return src ?? undefined;
   if (/^(https?:|data:|blob:)/i.test(src)) return src;
-  if ((src.startsWith("/api/") || src.startsWith("/__l5e/")) && isNative())
-    return `${SITE_URL}${src}`;
+  if (src.startsWith("/__l5e/")) return undefined;
   return src;
 }
 

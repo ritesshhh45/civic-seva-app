@@ -9,8 +9,6 @@ import { requestNotificationPermission } from "@/lib/push";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
-const SITE = "https://civic-seva-app.vercel.app";
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -26,8 +24,8 @@ export const Route = createFileRoute("/")({
         content:
           "Report water, road, drainage, electricity and streetlight problems in your ward directly to Sanjay Chaudhary on WhatsApp.",
       },
-      { property: "og:image", content: `${SITE}/photos/portrait-header.jpg` },
-      { name: "twitter:image", content: `${SITE}/photos/portrait-header.jpg` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
@@ -112,9 +110,8 @@ function SplashScreen() {
       <div className="fade-up relative z-10 pt-10">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-white/85 shadow-[0_10px_30px_-14px_rgba(120,70,10,0.6)] ring-1 ring-white/70 backdrop-blur-md">
           <AppImage
-            src={config?.app_icon_url || config?.party_logo_url}
-            alt=""
-            fallback="none"
+            src="/branding/bjp-lotus.png"
+            alt="Bharatiya Janata Party lotus"
             priority
             className="h-12 w-12 rounded-full bg-transparent"
           />
@@ -125,7 +122,7 @@ function SplashScreen() {
       <div className="relative z-10 mt-10 flex flex-1 flex-col items-center px-8">
         <div className="animate-portrait gold-rim h-56 w-56 overflow-hidden rounded-full">
           <AppImage
-            src={config?.splash_photo_url || config?.photo_url}
+            src={config?.splash_photo_url || config?.photo_url || "/photos/portrait-splash.jpg"}
             alt={name}
             position="top"
             priority
@@ -229,9 +226,8 @@ function LoginScreen() {
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-soft ring-1 ring-white/70">
               <AppImage
-                src={config?.app_icon_url || config?.party_logo_url}
-                alt=""
-                fallback="none"
+                src="/branding/bjp-lotus.png"
+                alt="Bharatiya Janata Party lotus"
                 priority
                 className="h-8 w-8 rounded-full bg-transparent"
               />
@@ -242,7 +238,7 @@ function LoginScreen() {
           <div className="mt-6 flex flex-col items-center text-center">
             <div className="rounded-full bg-white/90 p-1.5 shadow-[0_18px_40px_-18px_rgba(120,60,0,0.65)]">
               <AppImage
-                src={config?.header_photo_url || config?.photo_url}
+                src={config?.header_photo_url || config?.photo_url || "/photos/portrait-header.jpg"}
                 alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
                 position="top"
                 priority
