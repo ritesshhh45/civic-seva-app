@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Landmark, ExternalLink, CalendarClock } from "lucide-react";
+import { Landmark, ExternalLink, CalendarClock, PhoneCall } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
 import { schemesQuery } from "@/lib/queries";
