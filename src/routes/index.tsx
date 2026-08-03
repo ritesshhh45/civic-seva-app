@@ -39,9 +39,24 @@ function Entry() {
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
   const [needsLogin, setNeedsLogin] = useState(false);
+  const { data: config } = useQuery(configQuery);
+
+  // Welcome audio is optional: preloaded, played once, never blocking.
+  useEffect(() => {
+    const audio = preloadWelcomeAudio(config?.welcome_audio_url);
+    if (!audio) return;
+    const timer = setTimeout(() => playWelcomeAudioOnce(audio), 300);
+    return () => {
+      clearTimeout(timer);
+      try {
+        audio.pause();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, [config?.welcome_audio_url]);
 
   useEffect(() => {
-    void requestNotificationPermission();
     const hasProfile = !!getProfile();
     const timer = setTimeout(() => {
       if (hasProfile) navigate({ to: "/home" });
