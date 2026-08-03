@@ -471,6 +471,7 @@ function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: ()
               { key: "benefits_en", label: "Benefits (English)", type: "textarea" },
               { key: "last_date", label: "Last date" },
               { key: "website_url", label: "Official website URL" },
+              { key: "helpline", label: "Helpline number" },
               { key: "is_new", label: "New", type: "bool" },
               { key: "is_featured", label: "Featured", type: "bool" },
               { key: "is_active", label: "Active", type: "bool" },
