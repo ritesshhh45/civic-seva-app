@@ -43,6 +43,7 @@ const dict = {
     benefits: "लाभ",
     lastDate: "शेवटची तारीख",
     website: "अधिकृत संकेतस्थळ",
+    helpline: "हेल्पलाइन",
     newTag: "नवीन",
     featured: "प्रमुख",
     all: "सर्व",
