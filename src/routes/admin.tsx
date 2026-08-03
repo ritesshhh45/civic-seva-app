@@ -448,6 +448,7 @@ function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: ()
               benefits_en: "",
               last_date: "",
               website_url: "",
+              helpline: "",
               is_new: true,
               is_featured: false,
               is_active: true,
