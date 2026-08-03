@@ -11,5 +11,6 @@ export default defineConfig({
   ],
   resolve: { tsconfigPaths: true },
   server: { host: "0.0.0.0", port: 8080 },
-  build: { target: "es2022" },
+  esbuild: { drop: ["console", "debugger"] },
+  build: { target: "es2022", sourcemap: false, cssMinify: true },
 });
