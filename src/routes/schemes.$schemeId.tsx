@@ -88,6 +88,16 @@ function SchemeDetail() {
               </p>
             ) : null}
 
+            {s.helpline ? (
+              <a
+                href={`tel:${s.helpline}`}
+                className="press leaf-soft flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-secondary-foreground"
+              >
+                <PhoneCall className="h-4 w-4" /> {t("helpline")}: {s.helpline}
+              </a>
+            ) : null}
+
+
             {s.website_url ? (
               <a
                 href={s.website_url}
