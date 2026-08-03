@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
   Phone,
   MessageCircle,
@@ -11,7 +12,8 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
-import { CategoryIcon } from "@/components/CategoryIcon";
+import { WorkIcon } from "@/components/CategoryIcon";
+import { initNotifications } from "@/lib/push";
 import {
   configQuery,
   galleryQuery,
