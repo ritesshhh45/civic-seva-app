@@ -28,8 +28,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
-      { rel: "preload", as: "image", href: "/photos/portrait-header.jpg" },
+      { rel: "preload", as: "image", href: "/photos/portrait-splash.webp" },
+      { rel: "preload", as: "image", href: "/photos/portrait-header.webp" },
     ],
   }),
   component: Entry,
@@ -137,7 +137,7 @@ function SplashScreen() {
       <div className="relative z-10 mt-10 flex flex-1 flex-col items-center px-8">
         <div className="animate-portrait gold-rim h-56 w-56 overflow-hidden rounded-full">
           <AppImage
-            src={config?.splash_photo_url || config?.photo_url || "/photos/portrait-splash.jpg"}
+            src={config?.splash_photo_url || config?.photo_url || "/photos/portrait-splash.webp"}
             alt={name}
             position="top"
             priority
@@ -253,7 +253,7 @@ function LoginScreen() {
           <div className="mt-6 flex flex-col items-center text-center">
             <div className="rounded-full bg-white/90 p-1.5 shadow-[0_18px_40px_-18px_rgba(120,60,0,0.65)]">
               <AppImage
-                src={config?.header_photo_url || config?.photo_url || "/photos/portrait-header.jpg"}
+                src={config?.header_photo_url || config?.photo_url || "/photos/portrait-header.webp"}
                 alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
                 position="top"
                 priority
