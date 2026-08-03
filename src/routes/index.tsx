@@ -5,7 +5,7 @@ import { configQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 import { getDeviceId, getProfile, saveProfile } from "@/lib/device";
 import { registerCitizen } from "@/lib/citizen";
-import { requestNotificationPermission } from "@/lib/push";
+import { playWelcomeAudioOnce, preloadWelcomeAudio } from "@/lib/welcomeAudio";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
