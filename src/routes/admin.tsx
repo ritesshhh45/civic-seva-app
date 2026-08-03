@@ -529,6 +529,7 @@ function SettingsTab() {
     ["office_address_mr", "Office address (Marathi)"],
     ["office_address_en", "Office address (English)"],
     ["office_map_url", "Office map link"],
+    ["welcome_audio_url", "Welcome audio URL (optional, plays once)"],
   ];
 
   const images: [string, string][] = [
