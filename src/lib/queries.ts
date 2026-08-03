@@ -97,6 +97,7 @@ export type SchemeRow = {
   benefits_en: string;
   last_date: string;
   website_url: string;
+  helpline: string;
   is_new: boolean;
   is_featured: boolean;
   is_active: boolean;
