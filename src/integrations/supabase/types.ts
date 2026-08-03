@@ -70,6 +70,7 @@ export type Database = {
           updated_at: string
           ward_en: string
           ward_mr: string
+          welcome_audio_url: string
           whatsapp: string
         }
         Insert: {
@@ -97,6 +98,7 @@ export type Database = {
           updated_at?: string
           ward_en?: string
           ward_mr?: string
+          welcome_audio_url?: string
           whatsapp?: string
         }
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           updated_at?: string
           ward_en?: string
           ward_mr?: string
+          welcome_audio_url?: string
           whatsapp?: string
         }
         Relationships: []
