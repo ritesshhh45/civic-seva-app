@@ -327,6 +327,7 @@ export type Database = {
           documents_mr: string
           eligibility_en: string
           eligibility_mr: string
+          helpline: string
           id: string
           is_active: boolean
           is_featured: boolean
@@ -352,6 +353,7 @@ export type Database = {
           documents_mr?: string
           eligibility_en?: string
           eligibility_mr?: string
+          helpline?: string
           id?: string
           is_active?: boolean
           is_featured?: boolean
@@ -377,6 +379,7 @@ export type Database = {
           documents_mr?: string
           eligibility_en?: string
           eligibility_mr?: string
+          helpline?: string
           id?: string
           is_active?: boolean
           is_featured?: boolean
