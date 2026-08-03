@@ -125,7 +125,7 @@ function SplashScreen() {
       <div className="fade-up relative z-10 pt-10">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-white/85 shadow-[0_10px_30px_-14px_rgba(120,70,10,0.6)] ring-1 ring-white/70 backdrop-blur-md">
           <AppImage
-            src="/branding/bjp-lotus.png"
+            src="/branding/bjp-lotus.webp"
             alt="Bharatiya Janata Party lotus"
             priority
             className="h-12 w-12 rounded-full bg-transparent"
@@ -241,7 +241,7 @@ function LoginScreen() {
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-soft ring-1 ring-white/70">
               <AppImage
-                src="/branding/bjp-lotus.png"
+                src="/branding/bjp-lotus.webp"
                 alt="Bharatiya Janata Party lotus"
                 priority
                 className="h-8 w-8 rounded-full bg-transparent"
