@@ -202,9 +202,7 @@ function HomePage() {
                     {w.image_url ? (
                       <AppImage src={w.image_url} alt="" className="h-24 w-full" />
                     ) : (
-                      <div className="leaf-soft flex h-24 w-full items-center justify-center text-accent">
-                        <CategoryIcon name={w.icon} className="h-8 w-8" />
-                      </div>
+                      <WorkIcon name={w.icon} className="h-24 w-full" />
                     )}
                     <div className="p-3">
                       <p className="text-sm font-bold leading-tight">
