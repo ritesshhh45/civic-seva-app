@@ -93,6 +93,7 @@ const dict = {
     benefits: "Benefits",
     lastDate: "Last date",
     website: "Official website",
+    helpline: "Helpline",
     newTag: "New",
     featured: "Featured",
     all: "All",
