@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Landmark, ExternalLink, CalendarClock } from "lucide-react";
+import { Landmark, ExternalLink, CalendarClock, PhoneCall } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
 import { schemesQuery } from "@/lib/queries";
@@ -87,6 +87,16 @@ function SchemeDetail() {
                 <CalendarClock className="h-4 w-4" /> {t("lastDate")}: {s.last_date}
               </p>
             ) : null}
+
+            {s.helpline ? (
+              <a
+                href={`tel:${s.helpline}`}
+                className="press leaf-soft flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-secondary-foreground"
+              >
+                <PhoneCall className="h-4 w-4" /> {t("helpline")}: {s.helpline}
+              </a>
+            ) : null}
+
 
             {s.website_url ? (
               <a

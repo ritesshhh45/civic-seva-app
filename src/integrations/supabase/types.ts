@@ -70,6 +70,7 @@ export type Database = {
           updated_at: string
           ward_en: string
           ward_mr: string
+          welcome_audio_url: string
           whatsapp: string
         }
         Insert: {
@@ -97,6 +98,7 @@ export type Database = {
           updated_at?: string
           ward_en?: string
           ward_mr?: string
+          welcome_audio_url?: string
           whatsapp?: string
         }
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           updated_at?: string
           ward_en?: string
           ward_mr?: string
+          welcome_audio_url?: string
           whatsapp?: string
         }
         Relationships: []
@@ -327,6 +330,7 @@ export type Database = {
           documents_mr: string
           eligibility_en: string
           eligibility_mr: string
+          helpline: string
           id: string
           is_active: boolean
           is_featured: boolean
@@ -352,6 +356,7 @@ export type Database = {
           documents_mr?: string
           eligibility_en?: string
           eligibility_mr?: string
+          helpline?: string
           id?: string
           is_active?: boolean
           is_featured?: boolean
@@ -377,6 +382,7 @@ export type Database = {
           documents_mr?: string
           eligibility_en?: string
           eligibility_mr?: string
+          helpline?: string
           id?: string
           is_active?: boolean
           is_featured?: boolean

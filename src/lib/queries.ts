@@ -26,6 +26,7 @@ export type AppConfig = {
   office_address_mr: string;
   office_address_en: string;
   office_map_url: string;
+  welcome_audio_url: string;
 };
 
 export type Category = {
@@ -96,6 +97,7 @@ export type SchemeRow = {
   benefits_en: string;
   last_date: string;
   website_url: string;
+  helpline: string;
   is_new: boolean;
   is_featured: boolean;
   is_active: boolean;

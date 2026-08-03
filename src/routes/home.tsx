@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
   Phone,
   MessageCircle,
@@ -11,7 +12,8 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
-import { CategoryIcon } from "@/components/CategoryIcon";
+import { WorkIcon } from "@/components/CategoryIcon";
+import { initNotifications } from "@/lib/push";
 import {
   configQuery,
   galleryQuery,
@@ -54,6 +56,14 @@ function HomePage() {
   const activeWorks = (works ?? []).filter((w) => w.is_active);
   const activeSchemes = (schemes ?? []).filter((s) => s.is_active);
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
+
+  // Notifications are set up only once the home screen is mounted and idle.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void initNotifications();
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <AppLayout>
@@ -200,9 +210,7 @@ function HomePage() {
                     {w.image_url ? (
                       <AppImage src={w.image_url} alt="" className="h-24 w-full" />
                     ) : (
-                      <div className="leaf-soft flex h-24 w-full items-center justify-center text-accent">
-                        <CategoryIcon name={w.icon} className="h-8 w-8" />
-                      </div>
+                      <WorkIcon name={w.icon} className="h-24 w-full" />
                     )}
                     <div className="p-3">
                       <p className="text-sm font-bold leading-tight">

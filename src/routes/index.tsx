@@ -5,7 +5,7 @@ import { configQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 import { getDeviceId, getProfile, saveProfile } from "@/lib/device";
 import { registerCitizen } from "@/lib/citizen";
-import { requestNotificationPermission } from "@/lib/push";
+import { playWelcomeAudioOnce, preloadWelcomeAudio } from "@/lib/welcomeAudio";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
 
@@ -28,8 +28,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/photos/portrait-splash.jpg" },
-      { rel: "preload", as: "image", href: "/photos/portrait-header.jpg" },
+      { rel: "preload", as: "image", href: "/photos/portrait-splash.webp" },
+      { rel: "preload", as: "image", href: "/photos/portrait-header.webp" },
     ],
   }),
   component: Entry,
@@ -39,9 +39,24 @@ function Entry() {
   const navigate = useNavigate();
   const [showSplash, setShowSplash] = useState(true);
   const [needsLogin, setNeedsLogin] = useState(false);
+  const { data: config } = useQuery(configQuery);
+
+  // Welcome audio is optional: preloaded, played once, never blocking.
+  useEffect(() => {
+    const audio = preloadWelcomeAudio(config?.welcome_audio_url);
+    if (!audio) return;
+    const timer = setTimeout(() => playWelcomeAudioOnce(audio), 300);
+    return () => {
+      clearTimeout(timer);
+      try {
+        audio.pause();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, [config?.welcome_audio_url]);
 
   useEffect(() => {
-    void requestNotificationPermission();
     const hasProfile = !!getProfile();
     const timer = setTimeout(() => {
       if (hasProfile) navigate({ to: "/home" });
@@ -110,7 +125,7 @@ function SplashScreen() {
       <div className="fade-up relative z-10 pt-10">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-white/85 shadow-[0_10px_30px_-14px_rgba(120,70,10,0.6)] ring-1 ring-white/70 backdrop-blur-md">
           <AppImage
-            src="/branding/bjp-lotus.png"
+            src="/branding/bjp-lotus.webp"
             alt="Bharatiya Janata Party lotus"
             priority
             className="h-12 w-12 rounded-full bg-transparent"
@@ -122,7 +137,7 @@ function SplashScreen() {
       <div className="relative z-10 mt-10 flex flex-1 flex-col items-center px-8">
         <div className="animate-portrait gold-rim h-56 w-56 overflow-hidden rounded-full">
           <AppImage
-            src={config?.splash_photo_url || config?.photo_url || "/photos/portrait-splash.jpg"}
+            src={config?.splash_photo_url || config?.photo_url || "/photos/portrait-splash.webp"}
             alt={name}
             position="top"
             priority
@@ -226,7 +241,7 @@ function LoginScreen() {
           <div className="flex items-center justify-between">
             <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/90 shadow-soft ring-1 ring-white/70">
               <AppImage
-                src="/branding/bjp-lotus.png"
+                src="/branding/bjp-lotus.webp"
                 alt="Bharatiya Janata Party lotus"
                 priority
                 className="h-8 w-8 rounded-full bg-transparent"
@@ -238,7 +253,7 @@ function LoginScreen() {
           <div className="mt-6 flex flex-col items-center text-center">
             <div className="rounded-full bg-white/90 p-1.5 shadow-[0_18px_40px_-18px_rgba(120,60,0,0.65)]">
               <AppImage
-                src={config?.header_photo_url || config?.photo_url || "/photos/portrait-header.jpg"}
+                src={config?.header_photo_url || config?.photo_url || "/photos/portrait-header.webp"}
                 alt={config ? pick(lang, config.rep_name_mr, config.rep_name_en) : ""}
                 position="top"
                 priority

@@ -448,6 +448,7 @@ function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: ()
               benefits_en: "",
               last_date: "",
               website_url: "",
+              helpline: "",
               is_new: true,
               is_featured: false,
               is_active: true,
@@ -470,6 +471,7 @@ function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: ()
               { key: "benefits_en", label: "Benefits (English)", type: "textarea" },
               { key: "last_date", label: "Last date" },
               { key: "website_url", label: "Official website URL" },
+              { key: "helpline", label: "Helpline number" },
               { key: "is_new", label: "New", type: "bool" },
               { key: "is_featured", label: "Featured", type: "bool" },
               { key: "is_active", label: "Active", type: "bool" },
@@ -527,6 +529,7 @@ function SettingsTab() {
     ["office_address_mr", "Office address (Marathi)"],
     ["office_address_en", "Office address (English)"],
     ["office_map_url", "Office map link"],
+    ["welcome_audio_url", "Welcome audio URL (optional, plays once)"],
   ];
 
   const images: [string, string][] = [

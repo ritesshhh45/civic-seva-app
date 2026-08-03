@@ -86,7 +86,7 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
 
           {!back ? (
             <AppImage
-              src="/branding/bjp-lotus.png"
+              src="/branding/bjp-lotus.webp"
               alt="Bharatiya Janata Party lotus"
               priority
               className="h-9 w-9 shrink-0 rounded-full bg-card"
@@ -118,7 +118,7 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
 
       <main className="mx-auto max-w-md px-5 py-4">{children(profile)}</main>
       <footer className="mx-auto flex max-w-md items-center justify-center gap-2 px-5 pb-4 text-xs font-semibold text-muted-foreground">
-        <AppImage src="/branding/bjp-lotus.png" alt="BJP lotus" className="h-7 w-7 rounded-full" />
+        <AppImage src="/branding/bjp-lotus.webp" alt="BJP lotus" className="h-7 w-7 rounded-full" />
         <span>जनसेवा • विकास • विश्वास</span>
       </footer>
       <BottomNav />
