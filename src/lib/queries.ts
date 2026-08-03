@@ -26,6 +26,7 @@ export type AppConfig = {
   office_address_mr: string;
   office_address_en: string;
   office_map_url: string;
+  welcome_audio_url: string;
 };
 
 export type Category = {
