@@ -791,10 +791,41 @@ function CategoriesTab() {
 }
 
 function CitizensTab() {
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["admin-taps"],
     queryFn: () => adminListTaps(),
   });
+  const [busy, setBusy] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+
+  const changeStatus = async (row: TapRow, status: TapStatus) => {
+    setBusy(row.id);
+    setNote(null);
+    try {
+      await adminSetTapStatus(row.id, status);
+      await refetch();
+      try {
+        const res = await adminSendPush({
+          kind: "complaint_status",
+          sourceId: `${row.id}:${status}`,
+          deviceId: row.device_id,
+          title: "तक्रार अपडेट / Complaint update",
+          body: `${row.category_name} — ${TAP_STATUS_LABEL[status]}`,
+        });
+        setNote(
+          res.configured === false
+            ? "Status saved. Push is not configured yet, so no alert was sent."
+            : `Status saved. Alert sent to ${res.sent ?? 0} device(s).`,
+        );
+      } catch {
+        setNote("Status saved. Could not send the push alert.");
+      }
+    } catch (err) {
+      setNote(err instanceof Error ? err.message : "Could not update the status");
+    } finally {
+      setBusy(null);
+    }
+  };
 
   if (!data || data.length === 0)
     return (
@@ -802,35 +833,67 @@ function CitizensTab() {
     );
 
   return (
-    <ul className="space-y-3">
-      {data.map((row) => (
-        <li key={row.id} className="card-soft flex items-center gap-3 p-4">
-          <div className="min-w-0 flex-1">
-            <p className="font-bold">{row.user_name}</p>
-            <p className="text-xs text-muted-foreground">
-              {row.mobile} · {row.category_name}
-            </p>
-            <p className="text-[11px] text-muted-foreground">
-              {new Date(row.created_at).toLocaleString("en-IN")}
-            </p>
-          </div>
-          <a
-            href={`tel:${row.mobile}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/12 text-primary"
-          >
-            <Phone className="h-4 w-4" />
-          </a>
-          <a
-            href={waLink(row.mobile, "नमस्कार, आपल्या तक्रारीबाबत संपर्क करत आहे.")}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent"
-          >
-            <MessageCircle className="h-4 w-4" />
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-3">
+      {note ? <p className="text-sm text-muted-foreground">{note}</p> : null}
+      <ul className="space-y-3">
+        {data.map((row) => (
+          <li key={row.id} className="card-soft space-y-3 p-4">
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-bold">{row.user_name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {row.mobile} · {row.category_name}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  {new Date(row.created_at).toLocaleString("en-IN")}
+                </p>
+                {row.description ? (
+                  <p className="mt-2 rounded-lg bg-muted/50 p-2 text-sm">{row.description}</p>
+                ) : null}
+              </div>
+              <a
+                href={`tel:${row.mobile}`}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/12 text-primary"
+              >
+                <Phone className="h-4 w-4" />
+              </a>
+              <a
+                href={waLink(row.mobile, "नमस्कार, आपल्या तक्रारीबाबत संपर्क करत आहे.")}
+                target="_blank"
+                rel="noreferrer"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent"
+              >
+                <MessageCircle className="h-4 w-4" />
+              </a>
+            </div>
+
+            {row.photo_url ? (
+              <AppImage
+                src={row.photo_url}
+                alt={row.category_name}
+                className="h-40 w-full rounded-xl"
+              />
+            ) : null}
+
+            <label className="flex items-center gap-2 text-xs font-semibold">
+              Status
+              <select
+                disabled={busy === row.id}
+                value={row.status}
+                onChange={(e) => changeStatus(row, e.target.value as TapStatus)}
+                className="rounded-lg border border-input bg-background px-2 py-2 text-sm font-bold"
+              >
+                {TAP_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {TAP_STATUS_LABEL[s]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
