@@ -100,16 +100,66 @@ export function adminUpdateConfig(patch: Record<string, unknown>) {
   return rpc<{ ok: boolean }>("admin_update_config", { _patch: patch });
 }
 
+export const TAP_STATUSES = [
+  "submitted",
+  "under_review",
+  "in_progress",
+  "resolved",
+  "rejected",
+] as const;
+
+export type TapStatus = (typeof TAP_STATUSES)[number];
+
+export const TAP_STATUS_LABEL: Record<TapStatus, string> = {
+  submitted: "Submitted",
+  under_review: "Under review",
+  in_progress: "In progress",
+  resolved: "Resolved",
+  rejected: "Rejected",
+};
+
 export type TapRow = {
   id: string;
+  device_id: string;
   user_name: string;
   mobile: string;
   category_name: string;
+  description: string;
+  photo_url: string;
+  status: TapStatus;
   created_at: string;
 };
 
 export function adminListTaps() {
   return rpc<TapRow[]>("admin_list_taps");
+}
+
+export function adminSetTapStatus(id: string, status: TapStatus) {
+  return rpc<{ ok: boolean }>("admin_set_tap_status", { _id: id, _status: status });
+}
+
+export type PushResultSummary = {
+  ok?: boolean;
+  configured?: boolean;
+  sent?: number;
+  failed?: number;
+  targets?: number;
+  error?: string;
+};
+
+/** Sends a push notification to registered citizens (or one device). */
+export async function adminSendPush(input: {
+  kind: "notification" | "update" | "complaint_status" | "test";
+  title: string;
+  body: string;
+  sourceId?: string;
+  deviceId?: string;
+}): Promise<PushResultSummary> {
+  const { data, error } = await supabase.functions.invoke("send-push", { body: input });
+  if (error) throw new Error(error.message);
+  const res = data as PushResultSummary;
+  if (res?.error) throw new Error(res.error);
+  return res;
 }
 
 export type ImageRow = { id: string; filename: string; content_type: string; created_at: string };

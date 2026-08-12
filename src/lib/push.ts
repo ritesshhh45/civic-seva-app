@@ -1,22 +1,35 @@
 /**
- * Notification setup that can never take the app down.
+ * Native notification setup that can never take the app down.
  *
- * Every step is guarded: platform check, Android 13+ runtime permission check,
- * graceful skip when Firebase/FCM is not configured, and a hard try/catch around
- * registration. The caller can safely ignore the result.
+ * Every step is guarded: platform check, plugin availability, Android 13+
+ * runtime permission check, graceful skip when Firebase/FCM is not configured,
+ * and a hard try/catch around registration. The caller can safely ignore the
+ * result. The browser Notification API is never used.
  */
 
-export type PushResult = "native" | "web" | "unsupported" | "denied" | "unavailable";
+import { getDeviceId } from "./device";
+import { savePushToken } from "./citizen";
+
+export type PushResult = "native" | "unsupported" | "denied" | "unavailable";
 
 let started = false;
 
-async function setupNative(): Promise<PushResult> {
+async function setupNative(platform: string): Promise<PushResult> {
   const { PushNotifications } = await import("@capacitor/push-notifications");
 
   // Listeners first, so a registration error is reported instead of thrown.
   try {
+    await PushNotifications.addListener("registration", (token) => {
+      // Store the device token so the admin panel can reach this citizen.
+      void savePushToken(getDeviceId(), token?.value ?? "", platform).catch(() => {
+        /* token storage must never affect the app */
+      });
+    });
     await PushNotifications.addListener("registrationError", () => {
       /* FCM not configured on this build — notifications simply stay off. */
+    });
+    await PushNotifications.addListener("pushNotificationReceived", () => {
+      /* foreground delivery is handled by the OS tray configuration */
     });
   } catch {
     /* listener API unavailable — continue */
@@ -29,6 +42,7 @@ async function setupNative(): Promise<PushResult> {
     return "unavailable";
   }
 
+  // Android 13+ / iOS runtime prompt.
   if (receive === "prompt" || receive === "prompt-with-rationale") {
     try {
       receive = (await PushNotifications.requestPermissions()).receive;
@@ -60,20 +74,13 @@ export async function initNotifications(): Promise<PushResult> {
 
   try {
     const { Capacitor } = await import("@capacitor/core");
+    if (!Capacitor.isNativePlatform()) return "unsupported";
 
-    if (Capacitor.isNativePlatform()) {
-      if (Capacitor.getPlatform() !== "android" && Capacitor.getPlatform() !== "ios") {
-        return "unsupported";
-      }
-      if (!Capacitor.isPluginAvailable("PushNotifications")) return "unavailable";
-      return await setupNative();
-    }
+    const platform = Capacitor.getPlatform();
+    if (platform !== "android" && platform !== "ios") return "unsupported";
+    if (!Capacitor.isPluginAvailable("PushNotifications")) return "unavailable";
 
-    if (typeof Notification === "undefined") return "unsupported";
-    if (Notification.permission === "granted") return "web";
-    if (Notification.permission === "denied") return "denied";
-    const res = await Notification.requestPermission();
-    return res === "granted" ? "web" : "denied";
+    return await setupNative(platform);
   } catch {
     return "unavailable";
   }

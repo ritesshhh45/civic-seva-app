@@ -138,7 +138,9 @@ export type Database = {
           id: string
           mobile: string
           name: string
+          platform: string
           push_token: string | null
+          push_updated_at: string | null
         }
         Insert: {
           created_at?: string
@@ -146,7 +148,9 @@ export type Database = {
           id?: string
           mobile: string
           name: string
+          platform?: string
           push_token?: string | null
+          push_updated_at?: string | null
         }
         Update: {
           created_at?: string
@@ -154,7 +158,9 @@ export type Database = {
           id?: string
           mobile?: string
           name?: string
+          platform?: string
           push_token?: string | null
+          push_updated_at?: string | null
         }
         Relationships: []
       }
@@ -199,27 +205,39 @@ export type Database = {
           category_id: string | null
           category_name: string
           created_at: string
+          description: string
           device_id: string
           id: string
           mobile: string
+          photo_url: string
+          status: string
+          updated_at: string
           user_name: string
         }
         Insert: {
           category_id?: string | null
           category_name: string
           created_at?: string
+          description?: string
           device_id: string
           id?: string
           mobile: string
+          photo_url?: string
+          status?: string
+          updated_at?: string
           user_name: string
         }
         Update: {
           category_id?: string | null
           category_name?: string
           created_at?: string
+          description?: string
           device_id?: string
           id?: string
           mobile?: string
+          photo_url?: string
+          status?: string
+          updated_at?: string
           user_name?: string
         }
         Relationships: [
@@ -313,6 +331,39 @@ export type Database = {
           id?: string
           title_en?: string
           title_mr?: string
+        }
+        Relationships: []
+      }
+      push_log: {
+        Row: {
+          body: string
+          created_at: string
+          failed: number
+          id: string
+          kind: string
+          sent: number
+          source_id: string
+          title: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          failed?: number
+          id?: string
+          kind: string
+          sent?: number
+          source_id: string
+          title?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          failed?: number
+          id?: string
+          kind?: string
+          sent?: number
+          source_id?: string
+          title?: string
         }
         Relationships: []
       }
@@ -537,9 +588,13 @@ export type Database = {
           category_id: string | null
           category_name: string
           created_at: string
+          description: string
           device_id: string
           id: string
           mobile: string
+          photo_url: string
+          status: string
+          updated_at: string
           user_name: string
         }[]
         SetofOptions: {
@@ -555,6 +610,10 @@ export type Database = {
         Args: { _id: string; _name?: string; _status: string }
         Returns: Json
       }
+      admin_set_tap_status: {
+        Args: { _id: string; _status: string }
+        Returns: Json
+      }
       admin_update_config: { Args: { _patch: Json }; Returns: Json }
       admin_upload_image: {
         Args: { _content_type: string; _data: string; _filename: string }
@@ -568,18 +627,34 @@ export type Database = {
           id: string
         }[]
       }
-      citizen_log_tap: {
-        Args: {
-          _category_id: string
-          _category_name: string
-          _device_id: string
-          _mobile: string
-          _name: string
-        }
-        Returns: Json
-      }
+      citizen_log_tap:
+        | {
+            Args: {
+              _category_id: string
+              _category_name: string
+              _device_id: string
+              _mobile: string
+              _name: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _category_id: string
+              _category_name: string
+              _description: string
+              _device_id: string
+              _mobile: string
+              _name: string
+            }
+            Returns: Json
+          }
       citizen_register: {
         Args: { _device_id: string; _mobile: string; _name: string }
+        Returns: Json
+      }
+      citizen_save_push_token: {
+        Args: { _device_id: string; _platform: string; _token: string }
         Returns: Json
       }
       current_admin_role: { Args: never; Returns: string }
