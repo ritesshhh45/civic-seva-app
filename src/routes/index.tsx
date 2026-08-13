@@ -5,6 +5,7 @@ import { configQuery } from "@/lib/queries";
 import { pick, useLang } from "@/lib/i18n";
 import { getDeviceId, getProfile, saveProfile } from "@/lib/device";
 import { registerCitizen } from "@/lib/citizen";
+import { initNotifications } from "@/lib/push";
 import { playWelcomeAudioOnce, preloadWelcomeAudio } from "@/lib/welcomeAudio";
 import { LangToggle } from "@/components/LangToggle";
 import { AppImage } from "@/components/AppImage";
@@ -209,6 +210,9 @@ function LoginScreen() {
     try {
       await registerCitizen({ deviceId: getDeviceId(), name: name.trim(), mobile: mobile.trim() });
       saveProfile({ name: name.trim(), mobile: mobile.trim() });
+      // Single notification permission flow: ask once, right after login.
+      // Allow and Deny both resolve, and it can never throw or hang.
+      await initNotifications().catch(() => undefined);
       navigate({ to: "/home" });
     } catch (err) {
       setError(
