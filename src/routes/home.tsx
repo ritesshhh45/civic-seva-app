@@ -13,7 +13,6 @@ import {
 import { AppLayout } from "@/components/AppLayout";
 import { AppImage } from "@/components/AppImage";
 import { WorkIcon } from "@/components/CategoryIcon";
-import { initNotifications } from "@/lib/push";
 import {
   configQuery,
   galleryQuery,
@@ -56,14 +55,6 @@ function HomePage() {
   const activeWorks = (works ?? []).filter((w) => w.is_active);
   const activeSchemes = (schemes ?? []).filter((s) => s.is_active);
   const photos = (gallery ?? []).filter((g) => g.media_type !== "video");
-
-  // Notifications are set up only once the home screen is mounted and idle.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      void initNotifications();
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <AppLayout>
