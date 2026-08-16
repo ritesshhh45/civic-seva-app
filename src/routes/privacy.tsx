@@ -16,7 +16,7 @@ export default function Privacy() {
         </h1>
 
         <p className="mt-3 text-sm text-muted-foreground">
-          Last updated: August 14, 2026
+          Last updated: August 16, 2026
         </p>
 
         <div className="mt-8 space-y-8 text-sm leading-7">
@@ -116,16 +116,26 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold">10. Your Rights</h2>
+            <h2 className="text-xl font-bold">10. Data Sharing and Sale</h2>
             <p className="mt-2">
-              You may request information about your personal data or request
-              correction or deletion where applicable. Requests can be made
-              through the official Civic Seva contact channel.
+              We do not sell your personal data to third parties. Information
+              is only shared with service providers (such as Firebase and
+              Supabase) strictly to operate the application's core features,
+              such as notifications and data storage.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold">11. Changes to This Policy</h2>
+            <h2 className="text-xl font-bold">11. Your Rights</h2>
+            <p className="mt-2">
+              You may request information about your personal data, or
+              request correction or deletion where applicable, by contacting
+              us using the details in the Contact section below.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-bold">12. Changes to This Policy</h2>
             <p className="mt-2">
               This Privacy Policy may be updated when application features or
               data practices change. The updated version will be published on
@@ -134,11 +144,21 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold">12. Contact</h2>
+            <h2 className="text-xl font-bold">13. Contact</h2>
             <p className="mt-2">
-              For privacy-related questions or requests, please contact the
-              Civic Seva administrator through the official contact channel
-              provided within the application.
+              For privacy-related questions or data requests, please contact
+              us at:
+            </p>
+            <p className="mt-2">
+              Email:{" "}
+              <a href="mailto:ritesshhh19@gmail.com" className="font-semibold text-primary">
+                ritesshhh19@gmail.com
+              </a>
+              <br />
+              WhatsApp/Phone:{" "}
+              <a href="tel:+919422115394" className="font-semibold text-primary">
+                +91 94221 15394
+              </a>
             </p>
           </section>
         </div>
