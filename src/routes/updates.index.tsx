@@ -29,7 +29,7 @@ function UpdatesPage() {
   const rows = data ?? [];
 
   return (
-    <AppLayout title={t("updates")}>
+    <AppLayout title={t("updates")} back>
       {() => (
         <div className="space-y-4">
           {rows.length === 0 ? (

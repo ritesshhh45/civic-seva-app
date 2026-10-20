@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep native hardware back-button handling centralized in `src/lib/backButton.ts` and initialize it from the root layout so its listener has one lifecycle owner.

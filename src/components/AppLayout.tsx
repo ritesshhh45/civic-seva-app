@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate, Link } from "@tanstack/react-router";
+import { useNavigate, useRouter, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Bell, ChevronLeft } from "lucide-react";
 import { getProfile, type Profile } from "@/lib/device";
@@ -19,6 +19,7 @@ type Props = {
 
 export function AppLayout({ children, title, subtitle, back }: Props) {
   const navigate = useNavigate();
+  const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [ready, setReady] = useState(false);
   const { lang, t } = useLang();
@@ -40,6 +41,17 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
   }
 
   const unread = (updates ?? []).length;
+  const goBack = () => {
+    try {
+      if (router.history.canGoBack()) {
+        router.history.back();
+      } else {
+        void navigate({ to: "/home" });
+      }
+    } catch {
+      void navigate({ to: "/home" });
+    }
+  };
 
   return (
     <div className="min-h-screen cream-gradient pb-28">
@@ -49,7 +61,7 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
         <div className="flex items-center gap-3">
           {back ? (
             <button
-              onClick={() => window.history.back()}
+              onClick={goBack}
               className="press flex h-11 w-11 items-center justify-center rounded-2xl bg-card shadow-soft"
               aria-label="Back"
             >

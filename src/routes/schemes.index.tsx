@@ -41,7 +41,7 @@ function SchemesPage() {
     cat === "__all" ? rows : rows.filter((s) => pick(lang, s.category_mr, s.category_en) === cat);
 
   return (
-    <AppLayout title={t("schemes")} subtitle={t("schemesSub")}>
+    <AppLayout title={t("schemes")} subtitle={t("schemesSub")} back>
       {() => (
         <div className="space-y-4">
           <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5">
