@@ -1,7 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Phone, MessageCircle, Trash2, Plus, Save, ShieldCheck, ShieldX } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  Trash2,
+  Plus,
+  Save,
+  ShieldCheck,
+  ShieldX,
+  ChevronLeft,
+} from "lucide-react";
 import {
   adminDeleteRow,
   adminListAdmins,
@@ -324,16 +333,40 @@ const TABS = [
 
 function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: () => void }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Settings");
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const goBack = () => {
+    try {
+      if (router.history.canGoBack()) {
+        router.history.back();
+      } else {
+        void navigate({ to: "/home" });
+      }
+    } catch {
+      void navigate({ to: "/home" });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-16">
       <div className="tricolor-bar h-1.5 w-full" />
       <header className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
-        <div>
-          <h1 className="text-xl font-extrabold">Admin panel</h1>
-          <p className="text-xs text-muted-foreground">
-            {session.email} · {session.role.replace("_", " ")}
-          </p>
+        <div className="flex min-w-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={goBack}
+            aria-label="Back"
+            className="press flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-card shadow-soft"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <div className="min-w-0">
+            <h1 className="text-xl font-extrabold">Admin panel</h1>
+            <p className="truncate text-xs text-muted-foreground">
+              {session.email} · {session.role.replace("_", " ")}
+            </p>
+          </div>
         </div>
         <button onClick={onLogout} className="text-sm font-semibold text-destructive">
           Log out

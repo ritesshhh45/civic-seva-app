@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, useRouter } from "@tanstack/react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { LanguageProvider } from "../lib/i18n";
+import { initBackButton } from "../lib/backButton";
 
 function NotFoundComponent() {
   return (
@@ -32,6 +34,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    return initBackButton(router);
+    // The root router is stable for the lifetime of the app; install its native listener once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

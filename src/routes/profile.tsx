@@ -43,7 +43,7 @@ function ProfilePage() {
   const videos = (gallery ?? []).filter((g) => g.media_type === "video");
 
   return (
-    <AppLayout title={t("profile")}>
+    <AppLayout title={t("profile")} back>
       {(profile) => (
         <div className="space-y-5">
           <div className="flex justify-end">
