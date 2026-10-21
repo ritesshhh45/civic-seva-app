@@ -8,7 +8,10 @@ import {
   type AdminTableName,
 } from "@/lib/admin";
 import { ImageField } from "./ImageField";
+<<<<<<< HEAD
 import { translateMrToEn } from "@/lib/translate";
+=======
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 
 export type FieldSpec<T> = {
   key: keyof T & string;
@@ -57,6 +60,7 @@ export function CrudTab<T extends Row>({
     );
   };
 
+<<<<<<< HEAD
   const persist = async (inputRow: T) => {
     let row = inputRow;
 
@@ -78,6 +82,9 @@ export function CrudTab<T extends Row>({
       } as T;
     }
 
+=======
+  const persist = async (row: T) => {
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
     const { id, created_at, updated_at, ...rest } = row as T & {
       created_at?: string;
       updated_at?: string;

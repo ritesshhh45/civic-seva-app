@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+<<<<<<< HEAD
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -62,6 +63,26 @@ const SchemesRoute = SchemesRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+=======
+import { Route as UpdatesRouteImport } from './routes/updates'
+import { Route as TakrariRouteImport } from './routes/takrari'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SchemesRouteImport } from './routes/schemes'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as UpdatesIndexRouteImport } from './routes/updates.index'
+import { Route as SchemesIndexRouteImport } from './routes/schemes.index'
+import { Route as UpdatesUpdateIdRouteImport } from './routes/updates.$updateId'
+import { Route as SchemesSchemeIdRouteImport } from './routes/schemes.$schemeId'
+
+const UpdatesRoute = UpdatesRouteImport.update({
+  id: '/updates',
+  path: '/updates',
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
   getParentRoute: () => rootRouteImport,
 } as any)
 const TakrariRoute = TakrariRouteImport.update({
@@ -69,6 +90,7 @@ const TakrariRoute = TakrariRouteImport.update({
   path: '/takrari',
   getParentRoute: () => rootRouteImport,
 } as any)
+<<<<<<< HEAD
 const UpdatesRoute = UpdatesRouteImport.update({
   id: '/updates',
   path: '/updates',
@@ -83,17 +105,74 @@ const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
   id: '/$schemeId',
   path: '/$schemeId',
   getParentRoute: () => SchemesRoute,
+=======
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchemesRoute = SchemesRouteImport.update({
+  id: '/schemes',
+  path: '/schemes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 } as any)
 const UpdatesIndexRoute = UpdatesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => UpdatesRoute,
 } as any)
+<<<<<<< HEAD
+=======
+const SchemesIndexRoute = SchemesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SchemesRoute,
+} as any)
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 const UpdatesUpdateIdRoute = UpdatesUpdateIdRouteImport.update({
   id: '/$updateId',
   path: '/$updateId',
   getParentRoute: () => UpdatesRoute,
 } as any)
+<<<<<<< HEAD
+=======
+const SchemesSchemeIdRoute = SchemesSchemeIdRouteImport.update({
+  id: '/$schemeId',
+  path: '/$schemeId',
+  getParentRoute: () => SchemesRoute,
+} as any)
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -206,6 +285,7 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+<<<<<<< HEAD
     '/': {
       id: '/'
       path: '/'
@@ -260,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+=======
+    '/updates': {
+      id: '/updates'
+      path: '/updates'
+      fullPath: '/updates'
+      preLoaderRoute: typeof UpdatesRouteImport
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
       parentRoute: typeof rootRouteImport
     }
     '/takrari': {
@@ -269,6 +356,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TakrariRouteImport
       parentRoute: typeof rootRouteImport
     }
+<<<<<<< HEAD
     '/updates': {
       id: '/updates'
       path: '/updates'
@@ -289,6 +377,63 @@ declare module '@tanstack/react-router' {
       fullPath: '/schemes/$schemeId'
       preLoaderRoute: typeof SchemesSchemeIdRouteImport
       parentRoute: typeof SchemesRoute
+=======
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schemes': {
+      id: '/schemes'
+      path: '/schemes'
+      fullPath: '/schemes'
+      preLoaderRoute: typeof SchemesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
     }
     '/updates/': {
       id: '/updates/'
@@ -297,6 +442,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesIndexRouteImport
       parentRoute: typeof UpdatesRoute
     }
+<<<<<<< HEAD
+=======
+    '/schemes/': {
+      id: '/schemes/'
+      path: '/'
+      fullPath: '/schemes/'
+      preLoaderRoute: typeof SchemesIndexRouteImport
+      parentRoute: typeof SchemesRoute
+    }
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
     '/updates/$updateId': {
       id: '/updates/$updateId'
       path: '/$updateId'
@@ -304,6 +459,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesUpdateIdRouteImport
       parentRoute: typeof UpdatesRoute
     }
+<<<<<<< HEAD
+=======
+    '/schemes/$schemeId': {
+      id: '/schemes/$schemeId'
+      path: '/$schemeId'
+      fullPath: '/schemes/$schemeId'
+      preLoaderRoute: typeof SchemesSchemeIdRouteImport
+      parentRoute: typeof SchemesRoute
+    }
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
   }
 }
 

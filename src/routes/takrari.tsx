@@ -25,10 +25,16 @@ function HistoryPage() {
   });
 
   return (
+<<<<<<< HEAD
     <AppLayout>
       {() => (
         <div>
           <h1 className="mb-4 text-xl font-extrabold">{t("myComplaints")}</h1>
+=======
+    <AppLayout title={t("myComplaints")} back>
+      {() => (
+        <div>
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
           {!data || data.length === 0 ? (
             <p className="card-soft p-6 text-center text-sm text-muted-foreground">
               {t("noComplaints")}

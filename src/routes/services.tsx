@@ -31,7 +31,11 @@ function ServicesPage() {
   const { data: categories } = useQuery(categoriesQuery);
 
   return (
+<<<<<<< HEAD
     <AppLayout title={t("services")} subtitle={t("servicesSub")}>
+=======
+    <AppLayout title={t("services")} subtitle={t("servicesSub")} back>
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
       {(profile) => {
         const active = (categories ?? []).filter((c) => c.is_active);
 

@@ -416,12 +416,26 @@ function AdminDashboard({ session, onLogout }: { session: Approved; onLogout: ()
               created_at: new Date().toISOString(),
             })}
             fields={[
+<<<<<<< HEAD
               { key: "title_mr", label: "शीर्षक (Title) – मराठीत लिहा" },
               { key: "body_mr", label: "माहिती (Details) – मराठीत लिहा", type: "textarea" },
               { key: "category_mr", label: "विषय (Category) – उदा. पाणी, रस्ते, वीज" },
               { key: "image_url", label: "फोटो (Photo)", type: "image" },
               { key: "is_important", label: "महत्त्वाचे (Important)", type: "bool" },
               { key: "is_pinned", label: "वर पिन करा (Pin on top)", type: "bool" },
+=======
+              { key: "title_mr", label: "Title (Marathi)" },
+              { key: "title_en", label: "Title (English)" },
+              { key: "body_mr", label: "Body (Marathi)", type: "textarea" },
+              { key: "body_en", label: "Body (English)", type: "textarea" },
+              { key: "category_mr", label: "Category (Marathi)" },
+              { key: "category_en", label: "Category (English)" },
+              { key: "image_url", label: "Photo", type: "image" },
+              { key: "publish_at", label: "Publish at (ISO)" },
+              { key: "is_pinned", label: "Pinned", type: "bool" },
+              { key: "is_important", label: "Breaking / important", type: "bool" },
+              { key: "is_archived", label: "Archived", type: "bool" },
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
             ]}
           />
         ) : null}
@@ -1031,4 +1045,8 @@ function NoticesTab() {
 
 function GalleryTab() {
   return <GalleryManager />;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51

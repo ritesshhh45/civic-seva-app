@@ -29,7 +29,11 @@ function UpdatesPage() {
   const rows = data ?? [];
 
   return (
+<<<<<<< HEAD
     <AppLayout title={t("updates")}>
+=======
+    <AppLayout title={t("updates")} back>
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
       {() => (
         <div className="space-y-4">
           {rows.length === 0 ? (

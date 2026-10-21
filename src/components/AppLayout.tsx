@@ -1,5 +1,9 @@
 import { useEffect, useState, type ReactNode } from "react";
+<<<<<<< HEAD
 import { useNavigate, Link } from "@tanstack/react-router";
+=======
+import { useNavigate, useRouter, Link } from "@tanstack/react-router";
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 import { useQuery } from "@tanstack/react-query";
 import { Bell, ChevronLeft } from "lucide-react";
 import { getProfile, type Profile } from "@/lib/device";
@@ -19,6 +23,10 @@ type Props = {
 
 export function AppLayout({ children, title, subtitle, back }: Props) {
   const navigate = useNavigate();
+<<<<<<< HEAD
+=======
+  const router = useRouter();
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
   const [profile, setProfile] = useState<Profile | null>(null);
   const [ready, setReady] = useState(false);
   const { lang, t } = useLang();
@@ -40,6 +48,20 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
   }
 
   const unread = (updates ?? []).length;
+<<<<<<< HEAD
+=======
+  const goBack = () => {
+    try {
+      if (router.history.canGoBack()) {
+        router.history.back();
+      } else {
+        void navigate({ to: "/home" });
+      }
+    } catch {
+      void navigate({ to: "/home" });
+    }
+  };
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
 
   return (
     <div className="min-h-screen cream-gradient pb-28">
@@ -49,7 +71,11 @@ export function AppLayout({ children, title, subtitle, back }: Props) {
         <div className="flex items-center gap-3">
           {back ? (
             <button
+<<<<<<< HEAD
               onClick={() => window.history.back()}
+=======
+              onClick={goBack}
+>>>>>>> a924290b6cad1e32c78c649ac7f6b31b4d81ad51
               className="press flex h-11 w-11 items-center justify-center rounded-2xl bg-card shadow-soft"
               aria-label="Back"
             >
