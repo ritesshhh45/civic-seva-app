@@ -1,0 +1,1 @@
+ALTER TABLE public.app_config ADD COLUMN IF NOT EXISTS welcome_audio_url text NOT NULL DEFAULT '';

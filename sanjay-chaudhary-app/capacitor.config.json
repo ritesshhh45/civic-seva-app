@@ -1,0 +1,9 @@
+{
+  "appId": "in.wardseva.sanjaychaudhary",
+  "appName": "Sanjay Chaudhary",
+  "webDir": "www",
+  "server": {
+    "url": "https://civic-seva-app.vercel.app",
+    "androidScheme": "https"
+  }
+}

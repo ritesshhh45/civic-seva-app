@@ -1,0 +1,298 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Seva app design system — warm cream backgrounds, saffron primary,
+ * green secondary. No blue, no dark heavy tones.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-saffron: var(--saffron);
+  --color-leaf: var(--leaf);
+  --color-cream: var(--cream);
+  --font-sans: "Baloo 2", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --shadow-card: 0 6px 20px -8px oklch(0.55 0.16 55 / 0.28);
+  --shadow-soft: 0 2px 10px -4px oklch(0.55 0.16 55 / 0.22);
+}
+
+:root {
+  --radius: 1.1rem;
+  --background: oklch(0.985 0.014 85);
+  --foreground: oklch(0.28 0.04 55);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.28 0.04 55);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.28 0.04 55);
+  --primary: oklch(0.68 0.19 48);
+  --primary-foreground: oklch(0.995 0.01 85);
+  --secondary: oklch(0.96 0.03 130);
+  --secondary-foreground: oklch(0.36 0.1 145);
+  --muted: oklch(0.955 0.02 85);
+  --muted-foreground: oklch(0.53 0.04 62);
+  --accent: oklch(0.52 0.15 150);
+  --accent-foreground: oklch(0.995 0.01 85);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.99 0.01 85);
+  --border: oklch(0.9 0.03 75);
+  --input: oklch(0.9 0.03 75);
+  --ring: oklch(0.68 0.19 48);
+  --saffron: oklch(0.68 0.19 48);
+  --leaf: oklch(0.52 0.15 150);
+  --cream: oklch(0.985 0.014 85);
+}
+
+.dark {
+  --background: oklch(0.985 0.014 85);
+  --foreground: oklch(0.28 0.04 55);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.28 0.04 55);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.28 0.04 55);
+  --primary: oklch(0.68 0.19 48);
+  --primary-foreground: oklch(0.995 0.01 85);
+  --secondary: oklch(0.96 0.03 130);
+  --secondary-foreground: oklch(0.36 0.1 145);
+  --muted: oklch(0.955 0.02 85);
+  --muted-foreground: oklch(0.53 0.04 62);
+  --accent: oklch(0.52 0.15 150);
+  --accent-foreground: oklch(0.995 0.01 85);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.99 0.01 85);
+  --border: oklch(0.9 0.03 75);
+  --input: oklch(0.9 0.03 75);
+  --ring: oklch(0.68 0.19 48);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@utility tricolor-bar {
+  background: linear-gradient(
+    90deg,
+    var(--color-saffron) 0%,
+    var(--color-saffron) 33%,
+    #ffffff 33%,
+    #ffffff 66%,
+    var(--color-leaf) 66%,
+    var(--color-leaf) 100%
+  );
+}
+
+@utility card-soft {
+  background-color: var(--color-card);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---- premium mobile surfaces ---- */
+
+@utility glass-card {
+  background: color-mix(in oklab, var(--color-card) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid color-mix(in oklab, var(--color-saffron) 16%, white);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px -22px oklch(0.55 0.16 55 / 0.45);
+}
+
+@utility card-premium {
+  background-color: var(--color-card);
+  border: 1px solid color-mix(in oklab, var(--color-saffron) 12%, white);
+  border-radius: 24px;
+  box-shadow: 0 16px 34px -24px oklch(0.5 0.14 55 / 0.5);
+}
+
+@utility saffron-gradient {
+  background: linear-gradient(135deg, oklch(0.74 0.17 62), oklch(0.66 0.2 42));
+}
+
+@utility cream-gradient {
+  background: linear-gradient(180deg, oklch(0.99 0.02 88), oklch(0.965 0.03 92));
+}
+
+@utility leaf-soft {
+  background: color-mix(in oklab, var(--color-leaf) 12%, white);
+}
+
+@utility press {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms ease;
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-rise {
+  animation: rise-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* ---- splash: sunrise, particles, golden rim, loading line ---- */
+
+#lovable-badge,
+[data-lovable-badge] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@utility sunrise-bg {
+  background:
+    radial-gradient(120% 70% at 50% 82%, oklch(0.86 0.14 72 / 0.85) 0%, transparent 62%),
+    radial-gradient(80% 45% at 50% 88%, oklch(0.92 0.11 85 / 0.9) 0%, transparent 70%),
+    linear-gradient(180deg, oklch(0.995 0.006 95) 0%, oklch(0.98 0.03 90) 38%, oklch(0.93 0.08 82) 70%, oklch(0.86 0.14 70) 100%);
+}
+
+@keyframes sun-drift {
+  0%,
+  100% {
+    transform: translate3d(-3%, 0, 0) scale(1);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+    opacity: 1;
+  }
+}
+
+@utility sun-glow {
+  background: radial-gradient(circle, oklch(0.95 0.13 88 / 0.95) 0%, oklch(0.9 0.15 70 / 0.45) 45%, transparent 72%);
+  filter: blur(2px);
+  animation: sun-drift 9s ease-in-out infinite;
+}
+
+@keyframes particle-float {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateY(-120px) scale(1.15);
+    opacity: 0;
+  }
+}
+
+@utility gold-particle {
+  border-radius: 9999px;
+  background: radial-gradient(circle, #ffe9a8 0%, #f0b429 60%, transparent 72%);
+  box-shadow: 0 0 10px rgba(240, 180, 41, 0.75);
+  animation: particle-float 11s linear infinite;
+}
+
+@keyframes portrait-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility animate-portrait {
+  animation: portrait-in 2400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility gold-rim {
+  box-shadow:
+    0 0 0 2px rgba(255, 226, 150, 0.95),
+    0 0 0 7px rgba(255, 255, 255, 0.55),
+    0 0 42px 6px rgba(240, 180, 41, 0.5),
+    0 28px 60px -26px rgba(120, 70, 10, 0.55);
+}
+
+@keyframes tri-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+
+@utility tri-sweep {
+  animation: tri-sweep 1250ms cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes soft-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility fade-up {
+  animation: soft-fade-up 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
